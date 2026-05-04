@@ -4,6 +4,7 @@ import { Menu, X, LogOut, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import logo from "@/assets/logo.jpeg";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const NAV_LINKS = [
   { to: "/", label: "Home" },
@@ -19,6 +20,7 @@ export default function NavHeader() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
+   const { lang, t, toggleLang } = useLanguage();
 
   const handleSignOut = async () => {
     await signOut();
@@ -47,6 +49,7 @@ export default function NavHeader() {
               </Button>
             </Link>
           ))}
+          
           {user ? (
             <>
               <Link to="/profile">
