@@ -1,5 +1,3 @@
-// src/pages/admin/dialogs.tsx
-// Modal dialogs used in the Users tab.
 
 import { useState } from "react";
 import { Button }  from "@/components/ui/button";
