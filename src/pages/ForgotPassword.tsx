@@ -1,9 +1,4 @@
-// ─── ForgotPassword.tsx ───────────────────────────────────────────────────────
-// Three-step password-reset flow:
-//   Step 1 — enter email  → backend sends a 6-digit OTP
-//   Step 2 — enter OTP    → backend verifies token
-//   Step 3 — set new password (strength meter + eye toggle + same-password guard)
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -46,16 +41,11 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
   const passwordValid  = isPasswordValid(newPassword);
   const passwordsMatch = newPassword === confirm;
 
-  // ── Same-password guard ───────────────────────────────────────────────────
-  // We can't know the current hash but the backend will catch it.
-  // Show a warning if new == old (user typed same thing in both fields AND
-  // we're in the reset flow — treat the OTP email address as the "old" context).
-  // The meaningful check here is newPassword !== confirm, caught above.
-  // The server enforces the actual same-as-current check.
+
 
   const touch = (f: string) => setTouched(t => ({ ...t, [f]: true }));
 
-  // ── Step 1: request OTP ──────────────────────────────────────────────────
+  
   const handleRequestOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     touch("email");
@@ -79,7 +69,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
     }
   };
 
-  // ── Resend OTP ────────────────────────────────────────────────────────────
+  
   const handleResend = async () => {
     setResending(true);
     try {
@@ -99,7 +89,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
     }
   };
 
-  // ── Step 2: verify OTP ────────────────────────────────────────────────────
+  
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (otp.length !== 6) {
@@ -124,7 +114,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
     }
   };
 
-  // ── Step 3: set new password ──────────────────────────────────────────────
+  
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched({ newPassword: true, confirm: true });
@@ -147,10 +137,9 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
       });
       const data = await res.json();
 
-      // ── Server-side same-password rejection ───────────────────────────────
+      
       if (!res.ok) {
-        // Surface the backend's exact message (e.g. "New password must be
-        // different from your current password.")
+       
         throw new Error(data.error || "Could not reset password");
       }
 
@@ -183,7 +172,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
 
       <AnimatePresence mode="wait">
 
-        {/* ── Step 1: Email ──────────────────────────────────────────────── */}
+      
         {step === "email" && (
           <motion.form key="email" {...slide} onSubmit={handleRequestOtp} className="space-y-4" noValidate>
             <p className="text-sm text-muted-foreground">
@@ -216,7 +205,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
           </motion.form>
         )}
 
-        {/* ── Step 2: OTP ────────────────────────────────────────────────── */}
+       
         {step === "otp" && (
           <motion.form key="otp" {...slide} onSubmit={handleVerifyOtp} className="space-y-4" noValidate>
             <p className="text-sm text-muted-foreground">
@@ -264,14 +253,14 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
           </motion.form>
         )}
 
-        {/* ── Step 3: New Password ───────────────────────────────────────── */}
+       
         {step === "newPassword" && (
           <motion.form key="newPassword" {...slide} onSubmit={handleResetPassword} className="space-y-4" noValidate autoComplete="off">
             <p className="text-sm text-muted-foreground">
               Choose a strong new password. It must be different from your previous password.
             </p>
 
-            {/* New password */}
+           
             <div className="space-y-2">
               <Label htmlFor="new-password" className="flex items-center gap-2">
                 <Lock className="h-3.5 w-3.5 text-primary" /> New Password
@@ -287,7 +276,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
               <PasswordStrength password={newPassword} />
             </div>
 
-            {/* Confirm password */}
+           
             <div className="space-y-2">
               <Label htmlFor="confirm-password" className="flex items-center gap-2">
                 <Lock className="h-3.5 w-3.5 text-primary" /> Confirm Password
@@ -316,7 +305,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
           </motion.form>
         )}
 
-        {/* ── Step 4: Done ───────────────────────────────────────────────── */}
+        
         {step === "done" && (
           <motion.div key="done" {...slide} className="text-center space-y-4 py-4">
             <CheckCircle2 className="h-12 w-12 text-primary mx-auto" />

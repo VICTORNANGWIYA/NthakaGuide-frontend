@@ -6,14 +6,14 @@ export interface District {
 }
 
 export const MALAWI_DISTRICTS: District[] = [
-  // Northern Region
+  
   { name: "Chitipa", region: "Northern"},
   { name: "Karonga", region: "Northern"},
   { name: "Likoma", region: "Northern"},
   { name: "Mzimba", region: "Northern"},
   { name: "Nkhata Bay", region: "Northern" },
   { name: "Rumphi", region: "Northern"},
-  // Central Region
+  
   { name: "Dedza", region: "Central"},
   { name: "Dowa", region: "Central"},
   { name: "Kasungu", region: "Central"},
@@ -23,7 +23,7 @@ export const MALAWI_DISTRICTS: District[] = [
   { name: "Ntcheu", region: "Central"},
   { name: "Ntchisi", region: "Central"},
   { name: "Salima", region: "Central"},
-  // Southern Region
+  
   { name: "Balaka", region: "Southern"},
   { name: "Blantyre", region: "Southern" },
   { name: "Chikwawa", region: "Southern"},

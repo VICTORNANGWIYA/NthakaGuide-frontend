@@ -1,7 +1,4 @@
-// ─── auth-helpers.tsx ─────────────────────────────────────────────────────────
-// Shared validation logic, password-strength indicator, and micro-components
-// used across LoginForm, SignUpForm, and ForgotPassword.
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 import { useState } from "react";
 import { CheckCircle2, XCircle, AlertCircle, Eye, EyeOff } from "lucide-react";
@@ -9,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Phone } from "lucide-react";
 
-// ─── Known email domains whitelist ────────────────────────────────────────────
+
 const KNOWN_DOMAINS = new Set([
   "gmail.com", "yahoo.com", "yahoo.co.uk", "yahoo.co.za",
   "outlook.com", "outlook.co.uk", "hotmail.com", "hotmail.co.uk",
@@ -33,7 +30,6 @@ export function isKnownDomain(domain: string): boolean {
   return false;
 }
 
-// ─── Validation helpers ───────────────────────────────────────────────────────
 
 export function validatePhone(phone: string): string | null {
   if (!phone) return null;
@@ -69,7 +65,7 @@ export function validateEmail(email: string): string | null {
   return null;
 }
 
-// ─── Password strength ────────────────────────────────────────────────────────
+
 export interface StrengthRule {
   label: string;
   test: (pw: string) => boolean;
@@ -124,7 +120,7 @@ export function PasswordStrength({ password }: { password: string }) {
   );
 }
 
-// ─── Inline field error ───────────────────────────────────────────────────────
+
 export function FieldError({ msg }: { msg: string | null }) {
   if (!msg) return null;
   return (
@@ -135,7 +131,7 @@ export function FieldError({ msg }: { msg: string | null }) {
   );
 }
 
-// ─── Phone input with locked +265 prefix ─────────────────────────────────────
+
 export function PhoneInput({
   value,
   onChange,
@@ -181,11 +177,7 @@ export function PhoneInput({
   );
 }
 
-// ─── Password input with eye toggle ──────────────────────────────────────────
-// Copy/paste is fully allowed — data-lpignore only blocks password MANAGER
-// autofill, it does NOT block keyboard shortcuts (Ctrl+C / Ctrl+V).
-// The onCopy/onCut/onPaste props are intentionally NOT set so the browser
-// handles them normally.
+
 export function PasswordInput({
   id,
   value,
@@ -201,7 +193,7 @@ export function PasswordInput({
   onBlur?: () => void;
   placeholder?: string;
   hasError?: boolean;
-  /** "new-password" for sign-up/reset (default). "off" for login. */
+  
   autoComplete?: string;
 }) {
   const [visible, setVisible] = useState(false);
@@ -218,8 +210,8 @@ export function PasswordInput({
         required
         minLength={8}
         autoComplete={autoComplete}
-        data-lpignore="true"   // blocks LastPass autofill only — NOT copy/paste
-        data-form-type="other" // blocks Dashlane autofill only — NOT copy/paste
+        data-lpignore="true"  
+        data-form-type="other" 
         className={`pr-10 ${hasError ? "border-destructive focus-visible:ring-destructive" : ""}`}
       />
       <button

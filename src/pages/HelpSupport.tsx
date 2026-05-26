@@ -1,9 +1,3 @@
-/**
- * HelpSupport.tsx
- *
- * Full Help & Support page.
- * Linked from the footer Help button (replace the dropdown with <Link to="/help">).
- */
 
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -25,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import Chatbot from "@/components/Chatbot";
 
-// ── FAQs ──────────────────────────────────────────────────────────────────────
+
 const faqs = [
   {
     q: "How do I get my soil tested?",
@@ -69,7 +63,7 @@ const faqs = [
   },
 ];
 
-// ── How-to steps ──────────────────────────────────────────────────────────────
+
 const HOW_TO = [
   {
     step: "1",
@@ -115,7 +109,7 @@ const HOW_TO = [
   },
 ];
 
-// ── Component ─────────────────────────────────────────────────────────────────
+
 export default function HelpSupport() {
   const { user } = useAuth();
   const [tourReset, setTourReset] = useState(false);
@@ -128,7 +122,7 @@ export default function HelpSupport() {
       localStorage.removeItem(`nthakaguide_tour_done_${userId}`);
       setTourReset(true);
       setTimeout(() => setTourReset(false), 3000);
-      // Reload to trigger the tour
+      
       window.location.reload();
     } catch {}
   };
@@ -143,7 +137,7 @@ export default function HelpSupport() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          {/* Page header */}
+          
           <div className="flex items-start justify-between gap-4 mb-2 flex-wrap">
             <div className="flex items-center gap-3">
               <HelpCircle className="h-7 w-7 text-primary shrink-0" />
@@ -152,7 +146,7 @@ export default function HelpSupport() {
               </h1>
             </div>
 
-            {/* Re-launch onboarding tour */}
+           
             {user && (
               <Button
                 variant="outline"
@@ -176,7 +170,7 @@ export default function HelpSupport() {
             Find answers to common questions or reach out for assistance
           </p>
 
-          {/* ── Quick help cards ─────────────────────────────────────────── */}
+         
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
             {[
               {
@@ -223,7 +217,7 @@ export default function HelpSupport() {
             ))}
           </div>
 
-          {/* ── How to use guide ─────────────────────────────────────────── */}
+         
           <h2 className="font-display text-xl font-bold text-foreground mb-5 flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-primary" /> How to Use NthakaGuide
           </h2>
@@ -238,7 +232,7 @@ export default function HelpSupport() {
               >
                 <Card className="border-border hover:border-primary/30 transition-colors">
                   <CardContent className="p-4 flex items-start gap-4">
-                    {/* Step circle */}
+                    
                     <div className={`h-10 w-10 rounded-full flex items-center justify-center font-display font-bold text-sm shrink-0 ${s.color}`}>
                       {s.step}
                     </div>
@@ -251,7 +245,7 @@ export default function HelpSupport() {
                       <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{s.desc}</p>
                     </div>
 
-                    {/* Arrow to analyse page for steps 1–3 */}
+                   
                     {(s.step === "1" || s.step === "2" || s.step === "3") && (
                       <Link
                         to="/recommend"
@@ -267,7 +261,7 @@ export default function HelpSupport() {
             ))}
           </div>
 
-          {/* ── FAQs ─────────────────────────────────────────────────────── */}
+          
           <h2 className="font-display text-xl font-bold text-foreground mb-5 flex items-center gap-2">
             <HelpCircle className="h-5 w-5 text-primary" /> Frequently Asked Questions
           </h2>
@@ -289,7 +283,7 @@ export default function HelpSupport() {
             </CardContent>
           </Card>
 
-          {/* ── CTA back to app ──────────────────────────────────────────── */}
+          
           <div className="rounded-xl bg-primary/5 border border-primary/15 p-6 text-center">
             <h3 className="font-display font-bold text-foreground text-lg mb-2">
               Ready to analyse your soil?

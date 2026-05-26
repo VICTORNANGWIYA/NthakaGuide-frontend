@@ -15,9 +15,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.jpeg";
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  TYPES
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 interface FertilizerPlanItem {
   type:            string;
@@ -38,7 +36,7 @@ interface FertilizerPlan {
     label:   string;
     message: string;
   };
-  // legacy flat fields
+  
   basal?:           string;
   basal_rate?:      string;
   topdress?:        string;
@@ -97,9 +95,7 @@ interface HistoryItem {
   soil_alerts:       SoilAlert[];
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 function modeBadge(mode: string) {
   if (mode === "lab")   return { label: "Lab Data",         cls: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" };
@@ -126,9 +122,7 @@ function rainfallBadgeVariant(cat: string | null) {
   return "secondary";
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  FERTILIZER PLAN RENDERER  (shared sub-component)
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 function FertilizerPlanCard({ plan }: { plan: FertilizerPlan }) {
   const hasItems  = (plan.items ?? []).length > 0;
@@ -139,7 +133,7 @@ function FertilizerPlanCard({ plan }: { plan: FertilizerPlan }) {
   return (
     <div className="rounded-md border border-border bg-muted/40 p-3 space-y-2.5">
 
-      {/* Header */}
+      
       <div className="flex items-center justify-between gap-2">
         <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
           <FlaskConical className="h-3 w-3" /> Fertilizer Plan
@@ -217,7 +211,7 @@ function FertilizerPlanCard({ plan }: { plan: FertilizerPlan }) {
         </div>
       )}
 
-      {/* Organic advice */}
+      
       {plan.organicAdvice && (
         <div className="flex gap-1.5 items-start border-t border-border pt-2">
           <Leaf className="h-3 w-3 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
@@ -242,9 +236,7 @@ function FertilizerPlanCard({ plan }: { plan: FertilizerPlan }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  ROTATION ADVICE RENDERER
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 function RotationCard({ advice }: { advice: RotationAdvice }) {
   const styles = {
@@ -275,9 +267,6 @@ function RotationCard({ advice }: { advice: RotationAdvice }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  SOIL VALUE PILL
-// ─────────────────────────────────────────────────────────────────────────────
 
 function SoilPill({
   label, value, good,
@@ -293,9 +282,7 @@ function SoilPill({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  MAIN COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 export default function History() {
   const { user, token } = useAuth();
@@ -338,7 +325,7 @@ export default function History() {
     }
   };
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  
   return (
     <div className="min-h-screen bg-background">
       <NavHeader />
@@ -353,7 +340,7 @@ export default function History() {
             Your previous soil analyses and crop recommendations
           </p>
 
-          {/* ── Loading ──────────────────────────────────────────────────── */}
+          
           {loading ? (
             <div className="flex flex-col items-center justify-center py-16 gap-3">
               <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
@@ -393,10 +380,10 @@ export default function History() {
                     <Card className="overflow-hidden hover:shadow-md transition-shadow border-border">
                       <CardContent className="p-0">
 
-                        {/* ══ CARD HEADER ══════════════════════════════════ */}
+                       
                         <div className="p-4 sm:p-5">
 
-                          {/* Meta row */}
+                        
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex flex-wrap items-center gap-2">
                               <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${mode.cls}`}>
@@ -417,7 +404,7 @@ export default function History() {
                               </span>
                             </div>
 
-                            {/* Actions */}
+                          
                             <div className="flex items-center gap-1 shrink-0">
                               <Button
                                 variant="ghost" size="sm"
@@ -440,7 +427,7 @@ export default function History() {
                             </div>
                           </div>
 
-                          {/* Top recommended crop */}
+                          
                           <div className="flex items-center gap-3 mt-3">
                             <img
                               src={logo}
@@ -464,7 +451,7 @@ export default function History() {
                             </div>
                           </div>
 
-                          {/* Key metric pills */}
+                          
                           <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-3 text-xs">
                             {item.fertilizer_type && (
                               <span className="flex items-center gap-1 text-muted-foreground">
@@ -496,7 +483,7 @@ export default function History() {
                             )}
                           </div>
 
-                          {/* Soil inputs mini row */}
+                         
                           {item.nitrogen !== null && (
                             <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-border">
                               {item.nitrogen      !== null && (
@@ -524,7 +511,7 @@ export default function History() {
                           )}
                         </div>
 
-                        {/* ══ EXPANDED DETAIL PANEL ══════════════════════ */}
+                        
                         <AnimatePresence>
                           {isOpen && (
                             <motion.div
@@ -536,7 +523,7 @@ export default function History() {
                             >
                               <div className="border-t border-border bg-muted/20 px-4 sm:px-5 py-5 space-y-6">
 
-                                {/* ── Soil alerts ──────────────────────── */}
+                                
                                 {alerts.length > 0 && (
                                   <section>
                                     <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
@@ -556,7 +543,7 @@ export default function History() {
                                   </section>
                                 )}
 
-                                {/* ── All crops ────────────────────────── */}
+                                
                                 {crops.length > 0 && (
                                   <section>
                                     <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
@@ -579,7 +566,7 @@ export default function History() {
                                                 : "border-border bg-background"
                                             }`}
                                           >
-                                            {/* Crop header */}
+                                            
                                             <div className="flex items-center gap-3">
                                               <span className="text-2xl">{crop.emoji}</span>
                                               <div className="flex-1 min-w-0">
@@ -603,12 +590,12 @@ export default function History() {
                                               </span>
                                             </div>
 
-                                            {/* Reason */}
+                                            
                                             <p className="text-xs text-muted-foreground leading-relaxed">
                                               {crop.reason}
                                             </p>
 
-                                            {/* Fertilizer + rotation in a responsive grid */}
+                                            
                                             {(hasFert || crop.rotationAdvice) && (
                                               <div className={`grid gap-2 ${
                                                 hasFert && crop.rotationAdvice
@@ -630,7 +617,7 @@ export default function History() {
                                   </section>
                                 )}
 
-                                {/* ── Full soil inputs grid ─────────────── */}
+                                
                                 {item.nitrogen !== null && (
                                   <section>
                                     <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">

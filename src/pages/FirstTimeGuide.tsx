@@ -1,12 +1,3 @@
-/**
- * FirstTimeGuide.tsx
- *
- * Full-screen onboarding tour shown ONCE to first-time users after login.
- * Stores completion in localStorage keyed by user ID so it never shows again.
- *
- * Usage: Drop <FirstTimeGuide /> into your App.tsx or layout component.
- * It renders nothing if the user has already completed the tour.
- */
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
-// ── Tour step definitions ─────────────────────────────────────────────────────
+
 const STEPS = [
   {
     icon: <Sprout className="h-10 w-10" />,
@@ -102,7 +93,7 @@ const STEPS = [
   },
 ];
 
-// ── Storage helpers ───────────────────────────────────────────────────────────
+
 const tourKey = (userId: string) => `nthakaguide_tour_done_${userId}`;
 
 function hasDoneTour(userId: string): boolean {
@@ -119,28 +110,28 @@ function markTourDone(userId: string) {
   } catch {}
 }
 
-// ── Component ─────────────────────────────────────────────────────────────────
+
 export default function FirstTimeGuide() {
   const { user } = useAuth();
   const [visible, setVisible] = useState(false);
   const [step, setStep] = useState(0);
 
-  // FIX: Derive userId inside the effect so we always react to the latest user,
-  // including when AuthContext resolves asynchronously after mount.
+  
+  
   useEffect(() => {
-    // Wait until auth context has resolved a real user
+    
     if (!user) return;
 
     const userId = user.id ?? user.email ?? "";
     if (!userId) return;
 
-    // Tour already completed for this user — do nothing
+    
     if (hasDoneTour(userId)) return;
 
-    // Small delay so the page behind renders first
+    
     const t = setTimeout(() => setVisible(true), 800);
     return () => clearTimeout(t);
-  }, [user]); // Re-run whenever the user object changes (e.g. login resolves)
+  }, [user]); 
 
   const userId = user?.id ?? user?.email ?? "";
 
@@ -160,16 +151,14 @@ export default function FirstTimeGuide() {
   const isLast = step === STEPS.length - 1;
   const isFirst = step === 0;
 
-  // FIX: Don't bail out before AnimatePresence — render it always so the exit
-  // animation can play. The `visible` flag controls what's actually shown.
-  // Only hard-bail if there's truly no user AND the modal isn't open.
+
   if (!user && !visible) return null;
 
   return (
     <AnimatePresence>
       {visible && (
         <>
-          {/* Backdrop */}
+        
           <motion.div
             key="backdrop"
             initial={{ opacity: 0 }}
@@ -179,7 +168,7 @@ export default function FirstTimeGuide() {
             onClick={dismiss}
           />
 
-          {/* Modal */}
+          
           <motion.div
             key="modal"
             initial={{ opacity: 0, scale: 0.92, y: 24 }}
@@ -191,10 +180,10 @@ export default function FirstTimeGuide() {
           >
             <div className="relative w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl overflow-hidden">
 
-              {/* Gradient accent background */}
+             
               <div className={`absolute inset-0 bg-gradient-to-br ${current.color} pointer-events-none`} />
 
-              {/* Close button */}
+              
               <button
                 onClick={dismiss}
                 className="absolute top-4 right-4 z-10 h-8 w-8 rounded-full bg-muted/80 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
@@ -203,7 +192,7 @@ export default function FirstTimeGuide() {
                 <X className="h-4 w-4" />
               </button>
 
-              {/* Progress bar */}
+              
               <div className="absolute top-0 left-0 right-0 h-1 bg-border">
                 <motion.div
                   className="h-full bg-primary"
@@ -213,17 +202,17 @@ export default function FirstTimeGuide() {
                 />
               </div>
 
-              {/* Content */}
+             
               <div className="relative px-8 pt-10 pb-8">
 
-                {/* Step badge */}
+                
                 <div className="flex items-center gap-3 mb-6">
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${current.badge}`}>
                     {step === 0 ? "Getting started" : step === STEPS.length - 1 ? "All done" : `Step ${step} of ${STEPS.length - 2}`}
                   </span>
                 </div>
 
-                {/* Icon + text — animate per step */}
+                
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={step}
@@ -255,9 +244,9 @@ export default function FirstTimeGuide() {
                   </motion.div>
                 </AnimatePresence>
 
-                {/* Navigation */}
+                
                 <div className="flex items-center justify-between mt-8">
-                  {/* Dot indicators */}
+                  
                   <div className="flex gap-1.5">
                     {STEPS.map((_, i) => (
                       <button
@@ -273,7 +262,7 @@ export default function FirstTimeGuide() {
                     ))}
                   </div>
 
-                  {/* Buttons */}
+                  
                   <div className="flex items-center gap-2">
                     {!isFirst && (
                       <Button
@@ -304,7 +293,7 @@ export default function FirstTimeGuide() {
                   </div>
                 </div>
 
-                {/* Skip link */}
+                
                 {!isLast && (
                   <button
                     onClick={dismiss}

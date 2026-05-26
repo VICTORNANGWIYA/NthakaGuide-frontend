@@ -1,9 +1,4 @@
-// ✅ PREMIUM PDF GENERATOR
-// Features:
-// 1. Clean layout
-// 2. Table-based fertilizer plans (jspdf-autotable)
-// 3. Soil bar chart
-// 4. Structured UI-like sections
+
 
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -15,9 +10,7 @@ export function generatePDFReport(input: SoilInput, result: Recommendation) {
   const pageWidth = 210;
   let y = 20;
 
-  // ─────────────────────────────
-  // HEADER
-  // ─────────────────────────────
+  
   doc.setFillColor(34, 87, 50);
   doc.rect(0, 0, 210, 28, "F");
 
@@ -32,9 +25,7 @@ export function generatePDFReport(input: SoilInput, result: Recommendation) {
 
   y = 38;
 
-  // ─────────────────────────────
-  // SECTION TITLE
-  // ─────────────────────────────
+  
   const section = (title: string) => {
     y += 6;
     doc.setFontSize(13);
@@ -66,9 +57,7 @@ export function generatePDFReport(input: SoilInput, result: Recommendation) {
     }
   };
 
-  // ─────────────────────────────
-  // SOIL CHART
-  // ─────────────────────────────
+  
   const drawSoilChart = () => {
     const data = [
       { label: "N", value: input.nitrogen },
@@ -98,18 +87,14 @@ export function generatePDFReport(input: SoilInput, result: Recommendation) {
     y += 55;
   };
 
-  // ─────────────────────────────
-  // LOCATION
-  // ─────────────────────────────
+ 
   section("Location & Climate");
 
   text("District", `${input.district.name} (${input.district.region})`);
   text("Rainfall", `${result.forecastedRainfall} mm`);
   text("Category", result.rainfallCategory);
 
-  // ─────────────────────────────
-  // SOIL
-  // ─────────────────────────────
+  
   section("Soil Analysis");
 
   text("Nitrogen", `${input.nitrogen}`);
@@ -123,9 +108,7 @@ export function generatePDFReport(input: SoilInput, result: Recommendation) {
   doc.text(result.soilAssessment, margin, y);
   y += 10;
 
-  // ─────────────────────────────
-  // CROPS
-  // ─────────────────────────────
+  
   section("Crop Recommendations");
 
   result.crops.forEach((crop, i) => {
@@ -143,7 +126,7 @@ export function generatePDFReport(input: SoilInput, result: Recommendation) {
     doc.text(doc.splitTextToSize(crop.reason, 170), margin, y);
     y += 10;
 
-    // TABLE FERTILIZER PLAN
+   
     if (crop.fertilizerPlan?.items?.length) {
       autoTable(doc, {
         startY: y,
@@ -163,9 +146,7 @@ export function generatePDFReport(input: SoilInput, result: Recommendation) {
     }
   });
 
-  // ─────────────────────────────
-  // FOOTER
-  // ─────────────────────────────
+ 
   const pages = doc.getNumberOfPages();
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i);

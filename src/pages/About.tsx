@@ -106,7 +106,7 @@ export default function About() {
 
       <main className="container max-w-5xl px-4 py-8 space-y-14">
 
-        {/* ── Hero ──────────────────────────────────────────────────── */}
+       
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -132,7 +132,7 @@ export default function About() {
           </div>
         </motion.div>
 
-        {/* ── Mission ───────────────────────────────────────────────── */}
+        
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -157,7 +157,7 @@ export default function About() {
           </Card>
         </motion.section>
 
-        {/* ── Features ──────────────────────────────────────────────── */}
+        
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -194,7 +194,7 @@ export default function About() {
           </div>
         </motion.section>
 
-        {/* ── How to use ────────────────────────────────────────────── */}
+        
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -232,7 +232,7 @@ export default function About() {
           </div>
         </motion.section>
 
-        {/* ── Technology ────────────────────────────────────────────── */}
+        
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -241,7 +241,7 @@ export default function About() {
           
         </motion.section>
 
-        {/* ── Developer ─────────────────────────────────────────────── */}
+       
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -253,7 +253,7 @@ export default function About() {
           <Card className="border-primary/20 bg-primary/5">
             <CardContent className="p-6 flex flex-col sm:flex-row gap-5 items-start">
 
-              {/* Avatar placeholder */}
+              
               <div className="flex items-center justify-center h-16 w-16 rounded-full
                               bg-primary/20 text-primary font-bold text-xl shrink-0">
                 {DEVELOPER.name.charAt(0)}
@@ -278,7 +278,7 @@ export default function About() {
           </Card>
         </motion.section>
 
-        {/* ── Footer note ───────────────────────────────────────────── */}
+        
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

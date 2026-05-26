@@ -1,8 +1,4 @@
-// ─── LoginForm.tsx ────────────────────────────────────────────────────────────
-// Handles email + password sign-in only.
-// Password saving is blocked via autoComplete="off" + data-lpignore.
-// Eye toggle lets the user reveal their password.
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 import { useState } from "react";
 import { Button }   from "@/components/ui/button";
@@ -19,8 +15,7 @@ import {
 } from "@/lib/auth-helpers";
 
 interface LoginFormProps {
-  onForgotPassword: () => void; // navigate to ForgotPassword view
-  onSwitchToSignUp: () => void; // navigate to SignUpForm view
+  onForgotPassword: () => void; 
 }
 
 export default function LoginForm({ onForgotPassword, onSwitchToSignUp }: LoginFormProps) {

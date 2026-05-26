@@ -36,7 +36,7 @@ const DELETION_REASONS = [
   { key: "other",            label: "Other reason" },
 ];
 
-// ── Password Field ────────────────────────────────────────────────────────────
+
 function PasswordField({
   id, label, value, onChange, placeholder = "••••••••",
 }: {
@@ -72,7 +72,7 @@ function PasswordField({
   );
 }
 
-// ── Image Lightbox ────────────────────────────────────────────────────────────
+
 function ImageLightbox({ src, name, onClose }: { src: string; name: string; onClose: () => void }) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -96,7 +96,7 @@ function ImageLightbox({ src, name, onClose }: { src: string; name: string; onCl
         className="relative flex flex-col items-center gap-4"
         onClick={e => e.stopPropagation()}
       >
-        {/* Close */}
+        
         <button
           onClick={onClose}
           className="absolute -top-3 -right-3 z-10 h-9 w-9 rounded-full bg-white/10 border border-white/20
@@ -106,14 +106,14 @@ function ImageLightbox({ src, name, onClose }: { src: string; name: string; onCl
           <X className="h-4 w-4" />
         </button>
 
-        {/* Full-size image */}
+        
         <img
           src={src}
           alt={name}
           className="max-h-[80vh] max-w-[80vw] w-auto h-auto rounded-2xl shadow-2xl object-contain"
         />
 
-        {/* Caption */}
+       
         {name && (
           <p className="text-white/80 text-sm font-medium tracking-wide">{name}</p>
         )}
@@ -124,7 +124,7 @@ function ImageLightbox({ src, name, onClose }: { src: string; name: string; onCl
   );
 }
 
-// ── Avatar Upload + Lightbox ──────────────────────────────────────────────────
+
 function AvatarUpload({
   avatarUrl, initials, name, onUpload, onRemove, uploading,
 }: {
@@ -148,7 +148,7 @@ function AvatarUpload({
     <>
       <div className="relative inline-block">
 
-  {/* ── Avatar (ONLY for viewing) ── */}
+  
   <button
     type="button"
     onClick={() => {
@@ -166,7 +166,7 @@ function AvatarUpload({
     </Avatar>
   </button>
 
-  {/* ── Camera Button (SEPARATE upload button) ── */}
+  
   <button
     type="button"
     onClick={() => fileRef.current?.click()}
@@ -181,7 +181,7 @@ function AvatarUpload({
     )}
   </button>
 
-  {/* Hidden file input */}
+  
   <input
     ref={fileRef}
     type="file"
@@ -201,7 +201,7 @@ function AvatarUpload({
   );
 }
 
-// ── Delete Modal ──────────────────────────────────────────────────────────────
+
 function DeleteModal({
   onConfirm, onCancel, loading,
 }: {
@@ -330,7 +330,7 @@ function DeleteModal({
   );
 }
 
-// ── Password strength ─────────────────────────────────────────────────────────
+
 const PW_RULES = [
   (pw: string) => pw.length >= 8,
   (pw: string) => /[a-z]/.test(pw),
@@ -341,7 +341,7 @@ const PW_RULES = [
 const STRENGTH_LABELS = ["Very weak", "Weak", "Fair", "Good", "Strong"];
 const STRENGTH_COLORS = ["bg-destructive", "bg-destructive", "bg-amber-500", "bg-amber-500", "bg-primary"];
 
-// ── Main component ────────────────────────────────────────────────────────────
+
 export default function Profile() {
   const { user, token, loading, signOut } = useAuth();
   const { toast }  = useToast();
@@ -536,7 +536,7 @@ export default function Profile() {
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-            {/* ── Left ── */}
+            
             <div className="space-y-4">
               <Card>
                 <CardContent className="flex flex-col items-center gap-4 p-6 text-center">

@@ -43,7 +43,7 @@ export interface FertilizerPlan {
     issues?: string[];
   };
 
-  // Legacy flat fields (kept for PDF report and old data)
+  
   basal?:           string;
   basal_rate?:      string;
   topdress?:        string;

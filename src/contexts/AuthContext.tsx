@@ -21,7 +21,7 @@ const AuthContext = createContext<AuthContextType>({
 
 export const useAuth = () => useContext(AuthContext);
 
-// ── JWT helpers ───────────────────────────────────────────────────────────────
+
 function decodeJWT(token: string): Record<string, any> | null {
   try {
     const base64 = token.split(".")[1];
@@ -45,7 +45,7 @@ function isTokenExpired(token: string): boolean {
   return ms !== null && ms === 0;
 }
 
-// ── Restore from localStorage — skip if already expired ───────────────────────
+
 function getInitialAuth(): { user: any; token: string | null } {
   try {
     const storedUser  = localStorage.getItem("user");
@@ -62,7 +62,7 @@ function getInitialAuth(): { user: any; token: string | null } {
   return { user: null, token: null };
 }
 
-// ── Provider ──────────────────────────────────────────────────────────────────
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const initial = getInitialAuth();
 
@@ -101,12 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => clearExpiryTimer();
   }, []);
 
-  /**
-   * login — stores user (which now includes `role`) and token.
-   * The Auth page reads user.role to redirect:
-   *   admin → /admin
-   *   user  → /recommend
-   */
+ 
   const login = useCallback((userData: any, jwtToken: string) => {
     setUser(userData);
     setToken(jwtToken);

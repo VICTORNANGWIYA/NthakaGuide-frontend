@@ -60,7 +60,7 @@ export default function Auth() {
                 <img src={logo} alt="NthakaGuide" className="h-14 w-14 rounded-lg shadow-md" />
               </div>
  
-              {/* Title animates when switching views */}
+             
               <AnimatePresence mode="wait">
                 <motion.div
                   key={view}
