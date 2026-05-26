@@ -1,8 +1,3 @@
-// ─── SignUpForm.tsx ───────────────────────────────────────────────────────────
-// Handles new-account registration: role, full name, phone, district,
-// email, and password (with strength indicator + eye toggle).
-// Password saving is blocked via autoComplete="new-password" + data-lpignore.
-// ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -107,7 +102,7 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4" noValidate autoComplete="off">
 
-      {/* Role */}
+      
       <AnimatePresence>
         {adminOpen && (
           <motion.div
@@ -137,7 +132,7 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
         )}
       </AnimatePresence>
 
-      {/* Full name */}
+     
       <div className="space-y-2">
         <Label htmlFor="signup-name" className="flex items-center gap-2">
           <User className="h-3.5 w-3.5 text-primary" /> Full Name
@@ -159,12 +154,12 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
         {touched.fullName && <FieldError msg={usernameError} />}
       </div>
 
-      {/* Phone */}
+      
       <div onBlur={() => touch("phone")}>
         <PhoneInput value={phone} onChange={setPhone} />
       </div>
 
-      {/* District */}
+      
       <div className="space-y-2">
         <Label className="flex items-center gap-2">
           <MapPin className="h-3.5 w-3.5 text-primary" /> Your District
@@ -189,7 +184,7 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
         </Select>
       </div>
 
-      {/* Email */}
+      
       <div className="space-y-2">
         <Label htmlFor="signup-email" className="flex items-center gap-2">
           <Mail className="h-3.5 w-3.5 text-primary" /> Email
@@ -211,17 +206,12 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
         {touched.email && <FieldError msg={emailError} />}
       </div>
 
-      {/* Password */}
+     
       <div className="space-y-2">
         <Label htmlFor="signup-password" className="flex items-center gap-2">
           <Lock className="h-3.5 w-3.5 text-primary" /> Password
         </Label>
-        {/*
-          autoComplete="new-password" signals to browsers that this is a new password
-          field so they won't autofill a saved credential, while still allowing
-          (but not prompting) the user's password manager to offer to save a new one.
-          data-lpignore="true" disables LastPass; data-form-type="other" disables Dashlane.
-        */}
+        
         <PasswordInput
           id="signup-password"
           value={password}
