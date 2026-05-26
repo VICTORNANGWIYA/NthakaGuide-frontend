@@ -12,8 +12,7 @@ import {
   type Recommendation,
   type CropRecommendation,
   type FertilizerPlan,
-  //type YieldPrediction,
- // type PestDiseaseRisk,
+
 } from "@/lib/recommendations";
 import { FlaskConical, Eye } from "lucide-react";
 import { getDistrictByName, MALAWI_DISTRICTS } from "@/lib/malawi-districts";
@@ -42,8 +41,7 @@ export default function Recommend() {
 
     const topCrop:   CropRecommendation | undefined = rec.crops?.[0];
     const fertPlan:  FertilizerPlan                 = topCrop?.fertilizerPlan  ?? {};
-    //const yieldPred: Partial<YieldPrediction>       = topCrop?.yieldPrediction ?? {};
-    //const pestRisk:  Partial<PestDiseaseRisk>       = topCrop?.pestDiseaseRisk ?? {};
+   
 
     try {
       const res = await fetch("http://localhost:5000/analysis/", {
@@ -74,10 +72,7 @@ export default function Recommend() {
           crop_confidence:  topCrop?.confidence           ?? null,
           crop_season:      topCrop?.season               ?? null,
           fertilizer_type:  fertPlan?.basal               ?? null,
-          //yield_predicted:  yieldPred?.predicted_tha      ?? null,
-          //yield_potential:  yieldPred?.potential_tha      ?? null,
-          //yield_category:   yieldPred?.yield_category     ?? null,
-          //pest_risk_level:  pestRisk?.summary?.level      ?? null,
+         
 
           land_use:      soilInput.landUse      ?? "food",
           previous_crop: soilInput.previousCrop ?? "",
@@ -243,7 +238,7 @@ export default function Recommend() {
               }
             </TabsContent>
 
-            {/* Combo */}
+            
             <TabsContent value="combo" className="space-y-6">
               <DistrictPicker />
               {district
