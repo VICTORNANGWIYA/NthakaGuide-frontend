@@ -1,12 +1,10 @@
-// src/pages/admin/ui.tsx
-// Reusable micro-components shared across all admin tab panels.
+
 
 import { RefreshCw, XCircle, AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { Badge }   from "@/components/ui/badge";
 import { Button }  from "@/components/ui/button";
 import logo        from "@/assets/logo.jpeg";
 
-// ── Sparkline ─────────────────────────────────────────────────────────────────
 export function Spark({
   data, className = "text-primary",
 }: {
@@ -38,7 +36,6 @@ export function Spark({
   );
 }
 
-// ── Mini bar chart ────────────────────────────────────────────────────────────
 export function MiniBar({ data }: { data: { month: string; count: number }[] }) {
   const max = Math.max(...data.map(d => d.count), 1);
   return (
@@ -58,7 +55,6 @@ export function MiniBar({ data }: { data: { month: string; count: number }[] }) 
   );
 }
 
-// ── Status dot ────────────────────────────────────────────────────────────────
 export function StatusDot({ status }: { status: string }) {
   const cls =
     status === "active"  ? "bg-primary shadow-[0_0_6px_hsl(var(--primary))]"
@@ -67,7 +63,6 @@ export function StatusDot({ status }: { status: string }) {
   return <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${cls}`} />;
 }
 
-// ── Full-panel loader ─────────────────────────────────────────────────────────
 export function Loader() {
   return (
     <div className="flex items-center justify-center py-12 gap-3">
