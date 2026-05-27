@@ -25,7 +25,7 @@ import { MALAWI_DISTRICTS } from "@/lib/malawi-districts";
 
 const API_URL = "http://localhost:5000";
 
-/* ── Password Field ── */
+
 function PasswordField({
   id, label, value, onChange,
 }: {
@@ -47,7 +47,7 @@ function PasswordField({
   );
 }
 
-/* ── Image Lightbox ── */
+
 function ImageLightbox({ src, name, onClose }: { src: string; name: string; onClose: () => void }) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -86,7 +86,7 @@ function ImageLightbox({ src, name, onClose }: { src: string; name: string; onCl
   );
 }
 
-/* ── Avatar Upload + Lightbox ── */
+
 function AvatarUpload({
   avatarUrl, initials, name, onUpload, onRemove, uploading,
 }: {
