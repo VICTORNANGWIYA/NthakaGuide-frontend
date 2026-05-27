@@ -10,7 +10,6 @@ import {
 import { useToast }    from "@/hooks/use-toast";
 import { adminAction } from "./hooks";
 
-// ── Reset Password ────────────────────────────────────────────────────────────
 interface ResetPasswordDialogProps {
   userId:    string;
   userEmail: string;
