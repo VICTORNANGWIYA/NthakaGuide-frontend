@@ -45,7 +45,7 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
   const [adminOpen,  setAdminOpen]  = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5000/auth/admin-slots")
+    fetch("https://nthakaguide-backend.onrender.com/auth/admin-slots")
       .then(r  => r.json())
       .then(d  => setAdminOpen(d.admin_registration_open ?? false))
       .catch(() => setAdminOpen(false));
