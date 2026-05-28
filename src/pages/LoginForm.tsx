@@ -1,5 +1,4 @@
 
-
 import { useState } from "react";
 import { Button }   from "@/components/ui/button";
 import { Input }    from "@/components/ui/input";
@@ -16,6 +15,7 @@ import {
 
 interface LoginFormProps {
   onForgotPassword: () => void; 
+  onSwitchToSignUp: () => void; 
 }
 
 export default function LoginForm({ onForgotPassword, onSwitchToSignUp }: LoginFormProps) {
@@ -28,7 +28,7 @@ export default function LoginForm({ onForgotPassword, onSwitchToSignUp }: LoginF
   const [touched,    setTouched]    = useState<Record<string, boolean>>({});
 
   const emailError   = validateEmail(email);
-  const passwordGood = password.length >= 8; // login only needs non-empty; server validates the rest
+  const passwordGood = password.length >= 8;
   const formValid    = !emailError && passwordGood;
 
   const touch = (field: string) => setTouched(t => ({ ...t, [field]: true }));
@@ -48,7 +48,7 @@ export default function LoginForm({ onForgotPassword, onSwitchToSignUp }: LoginF
 
     setSubmitting(true);
     try {
-      const res  = await fetch("http://localhost:5000/auth/login", {
+      const res  = await fetch("https://nthakaguide-backend.onrender.com/auth/login", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ email: email.trim().toLowerCase(), password }),
@@ -68,7 +68,6 @@ export default function LoginForm({ onForgotPassword, onSwitchToSignUp }: LoginF
   return (
     <form onSubmit={handleSubmit} className="space-y-4" noValidate autoComplete="off">
 
-      {/* Email */}
       <div className="space-y-2">
         <Label htmlFor="login-email" className="flex items-center gap-2">
           <Mail className="h-3.5 w-3.5 text-primary" /> Email
@@ -87,7 +86,6 @@ export default function LoginForm({ onForgotPassword, onSwitchToSignUp }: LoginF
         {touched.email && <FieldError msg={emailError} />}
       </div>
 
-      {/* Password */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="login-password" className="flex items-center gap-2">
@@ -101,10 +99,7 @@ export default function LoginForm({ onForgotPassword, onSwitchToSignUp }: LoginF
             Forgot password?
           </button>
         </div>
-        {/* 
-          autoComplete="off" + data-lpignore="true" prevents browsers / password managers 
-          from offering to save the password.
-        */}
+       
         <PasswordInput
           id="login-password"
           value={password}

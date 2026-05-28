@@ -36,7 +36,6 @@ interface FertilizerPlan {
     label:   string;
     message: string;
   };
-  
   basal?:           string;
   basal_rate?:      string;
   topdress?:        string;
@@ -133,7 +132,6 @@ function FertilizerPlanCard({ plan }: { plan: FertilizerPlan }) {
   return (
     <div className="rounded-md border border-border bg-muted/40 p-3 space-y-2.5">
 
-      
       <div className="flex items-center justify-between gap-2">
         <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
           <FlaskConical className="h-3 w-3" /> Fertilizer Plan
@@ -151,7 +149,7 @@ function FertilizerPlanCard({ plan }: { plan: FertilizerPlan }) {
         )}
       </div>
 
-      {/* Rich items */}
+      
       {hasItems && (
         <div className="space-y-2">
           {plan.items!.map((item, j) => (
@@ -159,7 +157,6 @@ function FertilizerPlanCard({ plan }: { plan: FertilizerPlan }) {
               key={j}
               className="text-xs border-t border-border/60 pt-2 first:border-0 first:pt-0 space-y-1"
             >
-              {/* Timing + rate row */}
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-[9px] font-medium">
                   <Clock className="h-2.5 w-2.5" />
@@ -170,15 +167,12 @@ function FertilizerPlanCard({ plan }: { plan: FertilizerPlan }) {
                 </span>
               </div>
 
-              {/* Action */}
               <p className="font-medium text-foreground leading-snug">{item.type}</p>
 
-              {/* Notes */}
               {item.notes && (
                 <p className="text-muted-foreground leading-relaxed">{item.notes}</p>
               )}
 
-              {/* Alternative */}
               {item.alternative && (
                 <p className="text-muted-foreground italic">Alt: {item.alternative}</p>
               )}
@@ -187,7 +181,6 @@ function FertilizerPlanCard({ plan }: { plan: FertilizerPlan }) {
         </div>
       )}
 
-      {/* Legacy flat fields fallback */}
       {!hasItems && hasLegacy && (
         <div className="space-y-1 text-xs">
           {plan.basal && (
@@ -211,7 +204,6 @@ function FertilizerPlanCard({ plan }: { plan: FertilizerPlan }) {
         </div>
       )}
 
-      
       {plan.organicAdvice && (
         <div className="flex gap-1.5 items-start border-t border-border pt-2">
           <Leaf className="h-3 w-3 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
@@ -221,7 +213,6 @@ function FertilizerPlanCard({ plan }: { plan: FertilizerPlan }) {
         </div>
       )}
 
-      {/* Warnings */}
       {(plan.warnings ?? []).length > 0 && (
         <div className="border-t border-border pt-2 space-y-1">
           {plan.warnings!.map((w, k) => (
@@ -235,7 +226,6 @@ function FertilizerPlanCard({ plan }: { plan: FertilizerPlan }) {
     </div>
   );
 }
-
 
 
 function RotationCard({ advice }: { advice: RotationAdvice }) {
@@ -268,6 +258,7 @@ function RotationCard({ advice }: { advice: RotationAdvice }) {
 }
 
 
+
 function SoilPill({
   label, value, good,
 }: { label: string; value: string; good: boolean }) {
@@ -295,7 +286,7 @@ export default function History() {
   const fetchHistory = async () => {
     if (!user || !token) { setLoading(false); return; }
     try {
-      const res  = await fetch("http://localhost:5000/analysis/", {
+      const res  = await fetch("https://nthakaguide-backend.onrender.com/analysis/", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -312,7 +303,7 @@ export default function History() {
 
   const handleDelete = async (id: string) => {
     try {
-      const res  = await fetch(`http://localhost:5000/analysis/${id}`, {
+      const res  = await fetch(`https://nthakaguide-backend.onrender.com/analysis/${id}`, {
         method:  "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -325,7 +316,6 @@ export default function History() {
     }
   };
 
-  
   return (
     <div className="min-h-screen bg-background">
       <NavHeader />
@@ -340,7 +330,6 @@ export default function History() {
             Your previous soil analyses and crop recommendations
           </p>
 
-          
           {loading ? (
             <div className="flex flex-col items-center justify-center py-16 gap-3">
               <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
@@ -380,10 +369,8 @@ export default function History() {
                     <Card className="overflow-hidden hover:shadow-md transition-shadow border-border">
                       <CardContent className="p-0">
 
-                       
                         <div className="p-4 sm:p-5">
 
-                        
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex flex-wrap items-center gap-2">
                               <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${mode.cls}`}>
@@ -404,7 +391,6 @@ export default function History() {
                               </span>
                             </div>
 
-                          
                             <div className="flex items-center gap-1 shrink-0">
                               <Button
                                 variant="ghost" size="sm"
@@ -427,7 +413,6 @@ export default function History() {
                             </div>
                           </div>
 
-                          
                           <div className="flex items-center gap-3 mt-3">
                             <img
                               src={logo}
@@ -483,7 +468,7 @@ export default function History() {
                             )}
                           </div>
 
-                         
+                          
                           {item.nitrogen !== null && (
                             <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-border">
                               {item.nitrogen      !== null && (
@@ -511,7 +496,7 @@ export default function History() {
                           )}
                         </div>
 
-                        
+                       
                         <AnimatePresence>
                           {isOpen && (
                             <motion.div
@@ -523,7 +508,7 @@ export default function History() {
                             >
                               <div className="border-t border-border bg-muted/20 px-4 sm:px-5 py-5 space-y-6">
 
-                                
+                              
                                 {alerts.length > 0 && (
                                   <section>
                                     <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
@@ -543,7 +528,7 @@ export default function History() {
                                   </section>
                                 )}
 
-                                
+                             
                                 {crops.length > 0 && (
                                   <section>
                                     <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
@@ -590,7 +575,7 @@ export default function History() {
                                               </span>
                                             </div>
 
-                                            
+                                            {/* Reason */}
                                             <p className="text-xs text-muted-foreground leading-relaxed">
                                               {crop.reason}
                                             </p>

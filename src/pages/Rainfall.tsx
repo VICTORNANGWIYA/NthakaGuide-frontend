@@ -9,11 +9,11 @@ import {
   Satellite, AlertTriangle, Droplets, Wind, Sun,
 } from "lucide-react";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "https://nthakaguide-backend.onrender.com";
 
 const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const MONTHS_LETTER = ["J","F","M","A","M","J","J","A","S","O","N","D"];
-const RAINY_MONTHS  = new Set(["Nov","Dec","Jan","Feb","Mar","Apr","May"]);
+const RAINY_MONTHS  = new Set(["Nov","Dec","Jan","Feb","Mar","Apr"]);
 
 
 interface DailyEntry   { date: string; mm: number }
@@ -116,7 +116,6 @@ function AnnualChart({
 
   return (
     <div className="space-y-2">
-      
       <div className="flex flex-wrap gap-4 text-xs text-muted-foreground mb-2">
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-sm bg-sky-400/70 inline-block" />
@@ -132,9 +131,7 @@ function AnnualChart({
         </span>
       </div>
 
-      
       <div className="relative" style={{ height: 220 }}>
-        
         {gridLines.map(g => (
           <div
             key={g.pct}
@@ -148,17 +145,14 @@ function AnnualChart({
           </div>
         ))}
 
-        
         <div
           className="absolute left-10 right-0 border-t-2 border-dashed border-amber-500/80 z-10 pointer-events-none"
           style={{ bottom: `${avgPct}%` }}
         />
 
-       
         <div className="absolute left-10 right-0 bottom-0 top-0 flex items-end gap-[3px] px-1">
           {values.map((v, i) => (
             <div key={i} className="flex-1 flex flex-col justify-end h-full group relative">
-             
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-background text-[10px] px-2 py-1 rounded whitespace-nowrap z-20 pointer-events-none shadow-lg">
                 <strong>{years[i]}</strong>: {v.toFixed(0)}mm
               </div>
@@ -176,7 +170,6 @@ function AnnualChart({
             </div>
           ))}
 
-          
           <div className="flex-1 flex flex-col justify-end h-full group relative ml-1">
             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity bg-primary text-primary-foreground text-[10px] px-2 py-1 rounded whitespace-nowrap z-20 pointer-events-none shadow-lg">
               <strong>Forecast {(years[years.length - 1] ?? 0) + 1}</strong>: {forecast.toFixed(0)}mm
@@ -193,7 +186,6 @@ function AnnualChart({
         </div>
       </div>
 
-     
       <div className="flex gap-[3px] pl-10 px-1">
         {years.map((y, i) => (
           <span key={i} className="flex-1 text-center text-[8px] text-muted-foreground truncate">
@@ -203,7 +195,7 @@ function AnnualChart({
         <span className="flex-1 text-center text-[8px] text-primary font-bold ml-1"> </span>
       </div>
 
-      
+      {/* Summary strip */}
       <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground pt-1 pl-10">
         <span>Min: <strong className="text-foreground">{Math.min(...values).toFixed(0)}mm</strong></span>
         <span>Max: <strong className="text-foreground">{Math.max(...values).toFixed(0)}mm</strong></span>
@@ -229,21 +221,21 @@ function MonthlyChart({
   const values = MONTHS_SHORT.map(m => monthlyMap[m] ?? 0);
   const total  = values.reduce((a, b) => a + b, 0);
 
-  
+  // Y gridlines at 25% intervals of maxMonthly rounded up
   const yMax   = Math.ceil(maxMonthly / 50) * 50 || 50;
   const grids  = [0, yMax * 0.25, yMax * 0.5, yMax * 0.75, yMax].map(v => Math.round(v));
 
   return (
     <div className="space-y-3">
-      
+      {/* Legend + source */}
       <div className="flex flex-wrap gap-4 text-xs text-muted-foreground items-center">
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-sm bg-sky-500/70 inline-block" />
-          Rainy season (Nov–May)
+          Rainy season (Nov–Apr)
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-sm bg-muted-foreground/25 inline-block" />
-          Dry season (Jun–Oct)
+          Dry season (May–Oct)
         </span>
         {source && (
           <span className={`ml-auto text-[10px] font-semibold px-2 py-0.5 rounded-full ${
@@ -256,9 +248,9 @@ function MonthlyChart({
         )}
       </div>
 
-      
+      {/* Chart */}
       <div className="relative" style={{ height: 200 }}>
-        
+        {/* Gridlines */}
         {grids.map((g, gi) => (
           <div key={gi} className="absolute left-0 right-0 flex items-center" style={{ bottom: `${(g / yMax) * 100}%` }}>
             <span className="text-[10px] text-muted-foreground w-9 text-right pr-2 shrink-0 select-none">{g}</span>
@@ -266,7 +258,7 @@ function MonthlyChart({
           </div>
         ))}
 
-       
+        {/* Season band shading (behind bars) */}
         <div className="absolute left-9 right-0 bottom-0 top-0 flex">
           {MONTHS_SHORT.map((m, i) => (
             <div
@@ -276,7 +268,7 @@ function MonthlyChart({
           ))}
         </div>
 
-       
+        {/* Bars */}
         <div className="absolute left-9 right-0 bottom-0 top-0 flex items-end gap-[3px] px-0.5">
           {MONTHS_SHORT.map((m, i) => {
             const v       = values[i];
@@ -304,7 +296,7 @@ function MonthlyChart({
         </div>
       </div>
 
-     
+      {/* Month labels with season indicator */}
       <div className="flex gap-[3px] pl-9 px-0.5">
         {MONTHS_SHORT.map((m, i) => (
           <span key={i} className={`flex-1 text-center text-[9px] font-semibold ${
@@ -315,17 +307,17 @@ function MonthlyChart({
         ))}
       </div>
 
-      
+      {/* Season annotation */}
       <div className="pl-9 flex gap-[3px] text-[9px]">
         <div className="flex-[7] text-center text-sky-600 dark:text-sky-400 font-semibold border-t border-sky-400/50 pt-0.5">
-          ← Rainy (Nov–May)
+          ← Rainy (Nov–Apr)
         </div>
         <div className="flex-[5] text-center text-muted-foreground border-t border-muted/50 pt-0.5">
-          Dry (Jun–Oct) →
+          Dry (May–Oct) →
         </div>
       </div>
 
-      
+      {/* Monthly totals table — compact */}
       <div className="grid grid-cols-6 gap-1 pt-1">
         {MONTHS_SHORT.map((m, i) => (
           <div key={m} className={`text-center p-1.5 rounded text-[10px] ${
@@ -377,7 +369,7 @@ function WeeklyChart({ weeks }: { weeks: WeeklyEntry[] }) {
                   <div className="text-sky-300">Total: {w.total_mm}mm</div>
                   <div className="opacity-70">Avg: {w.avg_mm}mm/day · {w.days} days</div>
                 </div>
-                
+                {/* Value label above bar */}
                 <span className="text-[9px] font-bold text-primary mb-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                   {w.total_mm}mm
                 </span>
@@ -394,7 +386,7 @@ function WeeklyChart({ weeks }: { weeks: WeeklyEntry[] }) {
         </div>
       </div>
 
-      
+      {/* Week labels */}
       <div className="flex gap-3 pl-9 px-2">
         {weeks.map((w, i) => (
           <div key={i} className="flex-1 text-center">
@@ -404,7 +396,7 @@ function WeeklyChart({ weeks }: { weeks: WeeklyEntry[] }) {
         ))}
       </div>
 
-      
+      {/* Detail table */}
       <div className="border border-border rounded-lg overflow-hidden mt-2">
         <table className="w-full text-xs">
           <thead>
@@ -452,7 +444,7 @@ function DailyChart({ days }: { days: DailyEntry[] }) {
 
   return (
     <div className="space-y-3">
-      
+      {/* Summary stats strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {[
           { label: "Period total", value: `${total.toFixed(1)}mm`, color: "text-sky-600" },
@@ -471,7 +463,7 @@ function DailyChart({ days }: { days: DailyEntry[] }) {
         Daily rainfall mm · {days[0]?.date} → {days[days.length - 1]?.date} · NASA POWER (5-day lag)
       </p>
 
-      
+      {/* Chart */}
       <div className="relative" style={{ height: 180 }}>
         {grids.map((g, i) => (
           <div key={i} className="absolute left-0 right-0 flex items-center" style={{ bottom: `${(g / yMax) * 100}%` }}>
@@ -480,7 +472,7 @@ function DailyChart({ days }: { days: DailyEntry[] }) {
           </div>
         ))}
 
-        
+        {/* Avg line */}
         <div
           className="absolute left-9 right-0 border-t-2 border-dashed border-amber-400/70 z-10 pointer-events-none"
           style={{ bottom: `${(avg / yMax) * 100}%` }}
@@ -514,7 +506,7 @@ function DailyChart({ days }: { days: DailyEntry[] }) {
         </div>
       </div>
 
-      
+      {/* Date axis — show first, middle, last */}
       <div className="flex justify-between pl-9 text-[9px] text-muted-foreground">
         <span>{days[0]?.date}</span>
         <span className="flex items-center gap-1">
@@ -524,7 +516,7 @@ function DailyChart({ days }: { days: DailyEntry[] }) {
         <span>{days[days.length - 1]?.date}</span>
       </div>
 
-      
+      {/* Colour key */}
       <div className="flex flex-wrap gap-4 text-[10px] text-muted-foreground">
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-500 inline-block" /> Peak day</span>
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-sky-400/80 inline-block" /> Above average</span>
@@ -535,7 +527,9 @@ function DailyChart({ days }: { days: DailyEntry[] }) {
   );
 }
 
-
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN PAGE
+// ─────────────────────────────────────────────────────────────────────────────
 export default function Rainfall() {
   const [selectedDistrict, setSelectedDistrict] = useState("Zomba");
   const [data, setData]           = useState<RainfallData | null>(null);
@@ -572,7 +566,7 @@ export default function Rainfall() {
     return () => controller.abort();
   }, [selectedDistrict]);
 
-  
+  // District pill selector
   const districtSelector = (
     <div className="flex flex-wrap gap-1.5 mb-8">
       {MALAWI_DISTRICTS.map(d => (
@@ -630,7 +624,6 @@ export default function Rainfall() {
     );
   }
 
-  
   const forecast         = Number(data.annualForecastMm)  || 0;
   const confidence       = Number(data.annualConfidence)  || 0;
   const avgRainfall      = Number(data.avgAnnualRainfall) || 0;
@@ -661,7 +654,7 @@ export default function Rainfall() {
       <NavHeader />
       <main className="container max-w-6xl px-4 py-8">
 
-       
+        {/* Header */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <div className="flex items-start justify-between flex-wrap gap-3">
             <div>
@@ -682,10 +675,10 @@ export default function Rainfall() {
 
         {districtSelector}
 
-       
+        {/* ── Top stat cards ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
 
-          
+          {/* Season card */}
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
             className="col-span-2"
@@ -708,14 +701,14 @@ export default function Rainfall() {
                   <div className="text-right shrink-0">
                     <p className="text-[10px] text-muted-foreground">Rainy season only</p>
                     <p className="text-xl font-black text-sky-600">{data.seasonTotalMm}mm</p>
-                    <p className="text-[10px] text-muted-foreground">Nov–May estimate</p>
+                    <p className="text-[10px] text-muted-foreground">Nov–Apr estimate</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </motion.div>
 
-          
+          {/* Annual forecast card */}
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
             <Card className="h-full">
               <CardContent className="p-4">
@@ -742,7 +735,6 @@ export default function Rainfall() {
             </Card>
           </motion.div>
 
-          
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
             <Card className="h-full">
               <CardContent className="p-4">
@@ -762,7 +754,7 @@ export default function Rainfall() {
 
         </div>
 
-       
+        {/* ── Risks ── */}
         {risks.length > 0 && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
             <Card className="mb-6">
@@ -788,12 +780,11 @@ export default function Rainfall() {
           </motion.div>
         )}
 
-        
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }}>
           <Card className="mb-6">
             <CardContent className="p-4 sm:p-6">
 
-              
+              {/* Tab bar */}
               <div className="flex gap-0 mb-6 border border-border rounded-lg overflow-hidden divide-x divide-border">
                 {tabs.map(tab => (
                   <button
@@ -816,7 +807,7 @@ export default function Rainfall() {
                 ))}
               </div>
 
-              
+              {/* Tab content */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeTab}
@@ -849,10 +840,10 @@ export default function Rainfall() {
           </Card>
         </motion.div>
 
-        
+        {/* ── Bottom cards ── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 
-          
+          {/* Crop suitability */}
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
             <Card className="h-full">
               <CardHeader className="pb-2">
@@ -888,7 +879,7 @@ export default function Rainfall() {
             </Card>
           </motion.div>
 
-          
+          {/* Fertilizer calendar */}
           {fertilizerCal.length > 0 && (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
               <Card className="h-full">

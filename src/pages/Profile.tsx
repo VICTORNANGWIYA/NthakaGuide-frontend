@@ -23,7 +23,7 @@ import logo from "@/assets/logo.jpeg";
 import { MALAWI_DISTRICTS } from "@/lib/malawi-districts";
 import { useNavigate } from "react-router-dom";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "https://nthakaguide-backend.onrender.com";
 
 const DELETION_REASONS = [
   { key: "not_useful",       label: "The app is not useful for my farming needs" },
@@ -35,7 +35,6 @@ const DELETION_REASONS = [
   { key: "temporary",        label: "I am taking a break and may return" },
   { key: "other",            label: "Other reason" },
 ];
-
 
 function PasswordField({
   id, label, value, onChange, placeholder = "••••••••",
@@ -72,7 +71,6 @@ function PasswordField({
   );
 }
 
-
 function ImageLightbox({ src, name, onClose }: { src: string; name: string; onClose: () => void }) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -96,7 +94,6 @@ function ImageLightbox({ src, name, onClose }: { src: string; name: string; onCl
         className="relative flex flex-col items-center gap-4"
         onClick={e => e.stopPropagation()}
       >
-        
         <button
           onClick={onClose}
           className="absolute -top-3 -right-3 z-10 h-9 w-9 rounded-full bg-white/10 border border-white/20
@@ -106,14 +103,13 @@ function ImageLightbox({ src, name, onClose }: { src: string; name: string; onCl
           <X className="h-4 w-4" />
         </button>
 
-        
+        {/* Full-size image */}
         <img
           src={src}
           alt={name}
           className="max-h-[80vh] max-w-[80vw] w-auto h-auto rounded-2xl shadow-2xl object-contain"
         />
 
-       
         {name && (
           <p className="text-white/80 text-sm font-medium tracking-wide">{name}</p>
         )}
@@ -123,7 +119,6 @@ function ImageLightbox({ src, name, onClose }: { src: string; name: string; onCl
     </motion.div>
   );
 }
-
 
 function AvatarUpload({
   avatarUrl, initials, name, onUpload, onRemove, uploading,
@@ -148,7 +143,6 @@ function AvatarUpload({
     <>
       <div className="relative inline-block">
 
-  
   <button
     type="button"
     onClick={() => {
@@ -166,7 +160,6 @@ function AvatarUpload({
     </Avatar>
   </button>
 
-  
   <button
     type="button"
     onClick={() => fileRef.current?.click()}
@@ -181,7 +174,6 @@ function AvatarUpload({
     )}
   </button>
 
-  
   <input
     ref={fileRef}
     type="file"
@@ -200,7 +192,6 @@ function AvatarUpload({
     </>
   );
 }
-
 
 function DeleteModal({
   onConfirm, onCancel, loading,
@@ -330,7 +321,6 @@ function DeleteModal({
   );
 }
 
-
 const PW_RULES = [
   (pw: string) => pw.length >= 8,
   (pw: string) => /[a-z]/.test(pw),
@@ -340,7 +330,6 @@ const PW_RULES = [
 ];
 const STRENGTH_LABELS = ["Very weak", "Weak", "Fair", "Good", "Strong"];
 const STRENGTH_COLORS = ["bg-destructive", "bg-destructive", "bg-amber-500", "bg-amber-500", "bg-primary"];
-
 
 export default function Profile() {
   const { user, token, loading, signOut } = useAuth();
@@ -536,7 +525,7 @@ export default function Profile() {
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-            
+            {/* ── Left ── */}
             <div className="space-y-4">
               <Card>
                 <CardContent className="flex flex-col items-center gap-4 p-6 text-center">
@@ -585,7 +574,6 @@ export default function Profile() {
               </Card>
             </div>
 
-            {/* ── Right ── */}
             <div className="space-y-6">
               <Card>
                 <CardHeader>

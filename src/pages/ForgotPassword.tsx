@@ -1,5 +1,4 @@
 
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button }    from "@/components/ui/button";
@@ -41,8 +40,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
   const passwordValid  = isPasswordValid(newPassword);
   const passwordsMatch = newPassword === confirm;
 
-
-
+ 
   const touch = (f: string) => setTouched(t => ({ ...t, [f]: true }));
 
   
@@ -53,7 +51,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
 
     setSubmitting(true);
     try {
-      const res  = await fetch("http://localhost:5000/auth/forgot-password", {
+      const res  = await fetch("https://nthakaguide-backend.onrender.com/auth/forgot-password", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ email: email.trim().toLowerCase() }),
@@ -73,7 +71,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
   const handleResend = async () => {
     setResending(true);
     try {
-      const res  = await fetch("http://localhost:5000/auth/forgot-password", {
+      const res  = await fetch("https://nthakaguide-backend.onrender.com/auth/forgot-password", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ email: email.trim().toLowerCase() }),
@@ -98,7 +96,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
     }
     setSubmitting(true);
     try {
-      const res  = await fetch("http://localhost:5000/auth/verify-otp", {
+      const res  = await fetch("https://nthakaguide-backend.onrender.com/auth/verify-otp", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ email: email.trim().toLowerCase(), otp }),
@@ -130,7 +128,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
 
     setSubmitting(true);
     try {
-      const res  = await fetch("http://localhost:5000/auth/reset-password", {
+      const res  = await fetch("https://nthakaguide-backend.onrender.com/auth/reset-password", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ reset_token: resetToken, password: newPassword }),
@@ -139,7 +137,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
 
       
       if (!res.ok) {
-       
+        
         throw new Error(data.error || "Could not reset password");
       }
 
@@ -172,7 +170,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
 
       <AnimatePresence mode="wait">
 
-      
+        
         {step === "email" && (
           <motion.form key="email" {...slide} onSubmit={handleRequestOtp} className="space-y-4" noValidate>
             <p className="text-sm text-muted-foreground">
@@ -253,14 +251,14 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
           </motion.form>
         )}
 
-       
+        
         {step === "newPassword" && (
           <motion.form key="newPassword" {...slide} onSubmit={handleResetPassword} className="space-y-4" noValidate autoComplete="off">
             <p className="text-sm text-muted-foreground">
               Choose a strong new password. It must be different from your previous password.
             </p>
 
-           
+            
             <div className="space-y-2">
               <Label htmlFor="new-password" className="flex items-center gap-2">
                 <Lock className="h-3.5 w-3.5 text-primary" /> New Password

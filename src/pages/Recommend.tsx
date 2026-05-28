@@ -12,7 +12,8 @@ import {
   type Recommendation,
   type CropRecommendation,
   type FertilizerPlan,
-
+  //type YieldPrediction,
+ // type PestDiseaseRisk,
 } from "@/lib/recommendations";
 import { FlaskConical, Eye } from "lucide-react";
 import { getDistrictByName, MALAWI_DISTRICTS } from "@/lib/malawi-districts";
@@ -41,10 +42,10 @@ export default function Recommend() {
 
     const topCrop:   CropRecommendation | undefined = rec.crops?.[0];
     const fertPlan:  FertilizerPlan                 = topCrop?.fertilizerPlan  ?? {};
-   
+    
 
     try {
-      const res = await fetch("http://localhost:5000/analysis/", {
+      const res = await fetch("https://nthakaguide-backend.onrender.com/analysis/", {
         method:  "POST",
         headers: {
           "Content-Type": "application/json",
@@ -238,7 +239,7 @@ export default function Recommend() {
               }
             </TabsContent>
 
-            
+            {/* Combo */}
             <TabsContent value="combo" className="space-y-6">
               <DistrictPicker />
               {district
