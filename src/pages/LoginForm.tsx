@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button }   from "@/components/ui/button";
 import { Input }    from "@/components/ui/input";
@@ -87,19 +86,9 @@ export default function LoginForm({ onForgotPassword, onSwitchToSignUp }: LoginF
       </div>
 
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="login-password" className="flex items-center gap-2">
-            <Lock className="h-3.5 w-3.5 text-primary" /> Password
-          </Label>
-          <button
-            type="button"
-            onClick={onForgotPassword}
-            className="text-xs text-primary hover:underline font-medium"
-          >
-            Forgot password?
-          </button>
-        </div>
-       
+        <Label htmlFor="login-password" className="flex items-center gap-2">
+          <Lock className="h-3.5 w-3.5 text-primary" /> Password
+        </Label>
         <PasswordInput
           id="login-password"
           value={password}
@@ -110,6 +99,15 @@ export default function LoginForm({ onForgotPassword, onSwitchToSignUp }: LoginF
         {touched.password && !passwordGood && (
           <FieldError msg="Password is required" />
         )}
+        <div className="text-right">
+          <button
+            type="button"
+            onClick={onForgotPassword}
+            className="text-xs text-primary hover:underline font-medium"
+          >
+            Forgot password?
+          </button>
+        </div>
       </div>
 
       <Button
