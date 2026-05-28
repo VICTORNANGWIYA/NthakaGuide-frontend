@@ -111,8 +111,8 @@ function alertStyle(type: string) {
 
 function AlertIcon({ type }: { type: string }) {
   if (type === "danger" || type === "warning")
-    return <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />;
-  return <CheckCircle className="h-3.5 w-3.5 shrink-0 mt-0.5" />;
+    return <AlertTriangle className="h-4 w-4 shrink-0" />;
+  return <CheckCircle className="h-4 w-4 shrink-0" />;
 }
 
 function rainfallBadgeVariant(cat: string | null) {
@@ -130,14 +130,18 @@ function FertilizerPlanCard({ plan }: { plan: FertilizerPlan }) {
   if (!hasItems && !hasLegacy) return null;
 
   return (
-    <div className="rounded-md border border-border bg-muted/40 p-3 space-y-2.5">
+    <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
 
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
-          <FlaskConical className="h-3 w-3" /> Fertilizer Plan
-        </p>
+      {/* Header */}
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center gap-2">
+          <Beaker className="h-4 w-4 text-primary shrink-0" />
+          {/* ↑ font-semibold, text-base for clear label */}
+          <span className="text-base font-semibold text-foreground">Fertilizer Plan</span>
+        </div>
+
         {plan.confidence && (
-          <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${
+          <span className={`text-sm font-medium px-2.5 py-0.5 rounded-full ${
             plan.confidence.score >= 85
               ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
               : plan.confidence.score >= 70
@@ -149,76 +153,81 @@ function FertilizerPlanCard({ plan }: { plan: FertilizerPlan }) {
         )}
       </div>
 
-      
+      {/* Structured items */}
       {hasItems && (
         <div className="space-y-2">
           {plan.items!.map((item, j) => (
-            <div
-              key={j}
-              className="text-xs border-t border-border/60 pt-2 first:border-0 first:pt-0 space-y-1"
-            >
-              <div className="flex items-center justify-between gap-2 flex-wrap">
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-[9px] font-medium">
-                  <Clock className="h-2.5 w-2.5" />
-                  {item.timing}
-                </span>
-                <span className="text-primary font-semibold text-[10px] tabular-nums">
-                  {item.applicationRate}
-                </span>
+            <div key={j} className="rounded-md border bg-background p-3 space-y-1">
+
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                {/* Timing chip */}
+                <div className="flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                  {/* text-sm → text-base for readability */}
+                  <span className="text-sm font-medium text-foreground">{item.timing}</span>
+                </div>
+                {/* Rate */}
+                <span className="text-sm font-semibold text-primary">{item.applicationRate}</span>
               </div>
 
-              <p className="font-medium text-foreground leading-snug">{item.type}</p>
+              {/* Type — the most important label, bump up */}
+              <p className="text-base font-semibold text-foreground">{item.type}</p>
 
               {item.notes && (
-                <p className="text-muted-foreground leading-relaxed">{item.notes}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.notes}</p>
               )}
 
               {item.alternative && (
-                <p className="text-muted-foreground italic">Alt: {item.alternative}</p>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">Alt:</span> {item.alternative}
+                </p>
               )}
             </div>
           ))}
         </div>
       )}
 
+      {/* Legacy basal/topdress layout */}
       {!hasItems && hasLegacy && (
-        <div className="space-y-1 text-xs">
+        <div className="space-y-1.5 text-sm">
           {plan.basal && (
             <p className="text-foreground">
-              <span className="text-muted-foreground">Basal:</span> {plan.basal}
+              <span className="font-semibold">Basal:</span> {plan.basal}
               {plan.basal_rate && <span className="text-muted-foreground"> · {plan.basal_rate}</span>}
             </p>
           )}
           {plan.topdress && (
             <p className="text-foreground">
-              <span className="text-muted-foreground">Top-dress:</span> {plan.topdress}
+              <span className="font-semibold">Top-dress:</span> {plan.topdress}
               {plan.topdress_rate && <span className="text-muted-foreground"> · {plan.topdress_rate}</span>}
             </p>
           )}
           {plan.topdress_timing && (
-            <p className="text-muted-foreground">{plan.topdress_timing}</p>
+            <p className="text-sm text-muted-foreground">{plan.topdress_timing}</p>
           )}
           {plan.notes && (
-            <p className="text-muted-foreground border-t border-border pt-1">{plan.notes}</p>
+            <p className="text-sm text-muted-foreground">{plan.notes}</p>
           )}
         </div>
       )}
 
+      {/* Organic advice */}
       {plan.organicAdvice && (
-        <div className="flex gap-1.5 items-start border-t border-border pt-2">
-          <Leaf className="h-3 w-3 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
-          <p className="text-[10px] text-green-800 dark:text-green-300 leading-relaxed">
+        <div className="flex gap-2 items-start rounded-md bg-green-50 dark:bg-green-900/20 p-3">
+          <Leaf className="h-4 w-4 text-green-700 dark:text-green-400 shrink-0 mt-0.5" />
+          <p className="text-sm text-green-800 dark:text-green-300 leading-relaxed">
             {plan.organicAdvice}
           </p>
         </div>
       )}
 
+      {/* Warnings */}
       {(plan.warnings ?? []).length > 0 && (
-        <div className="border-t border-border pt-2 space-y-1">
+        <div className="space-y-1.5">
           {plan.warnings!.map((w, k) => (
-            <div key={k} className="flex gap-1.5 items-start">
-              <ShieldAlert className="h-3 w-3 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />
-              <p className="text-[10px] text-yellow-800 dark:text-yellow-300 leading-relaxed">{w}</p>
+            <div key={k} className="flex gap-2 items-start text-yellow-800 dark:text-yellow-300">
+              <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+              <p className="text-sm leading-relaxed">{w}</p>
             </div>
           ))}
         </div>
@@ -246,13 +255,14 @@ function RotationCard({ advice }: { advice: RotationAdvice }) {
   };
 
   return (
-    <div className={`rounded-md border p-2.5 space-y-1 ${styles[advice.type]}`}>
-      <p className={`text-[10px] font-semibold flex items-center gap-1 ${textStyles[advice.type]}`}>
-        <RotateCcw className="h-2.5 w-2.5" />
+    <div className={`rounded-lg border p-3 space-y-1.5 ${styles[advice.type]}`}>
+      {/* Label — font-semibold, text-sm keeps it tidy */}
+      <p className={`text-sm font-semibold ${textStyles[advice.type]}`}>
         {labels[advice.type]}
       </p>
-      <p className={`text-[10px] leading-relaxed ${textStyles[advice.type]}`}>{advice.message}</p>
-      <p className="text-[10px] text-muted-foreground italic">{advice.recommendation}</p>
+      {/* Body copy — text-sm with relaxed line height for legibility */}
+      <p className={`text-sm leading-relaxed ${textStyles[advice.type]}`}>{advice.message}</p>
+      <p className={`text-sm leading-relaxed ${textStyles[advice.type]}`}>{advice.recommendation}</p>
     </div>
   );
 }
@@ -263,10 +273,11 @@ function SoilPill({
   label, value, good,
 }: { label: string; value: string; good: boolean }) {
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
+    /* text-xs → text-sm; explicit foreground colors so contrast is guaranteed */
+    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-medium border ${
       good
-        ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-        : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300"
+        ? "bg-green-50 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-700"
+        : "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-700"
     }`}>
       {label}: {value}
     </span>
@@ -320,39 +331,40 @@ export default function History() {
     <div className="min-h-screen bg-background">
       <NavHeader />
 
-      <main className="container max-w-5xl px-4 py-8">
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <main className="container mx-auto max-w-3xl px-4 py-8">
 
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-1">
+        {/* Page heading */}
+        <div className="mb-8 space-y-1">
+          {/* text-3xl + font-bold for a clear, professional page title */}
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Analysis History
           </h1>
-          <p className="text-muted-foreground mb-8">
+          {/* text-base replaces tiny muted subtitles */}
+          <p className="text-base text-muted-foreground">
             Your previous soil analyses and crop recommendations
           </p>
+        </div>
 
-          {loading ? (
-            <div className="flex flex-col items-center justify-center py-16 gap-3">
-              <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-              <p className="text-sm text-muted-foreground">Loading your analyses...</p>
-            </div>
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+            <p className="text-base text-muted-foreground">Loading your analyses…</p>
+          </div>
 
-          ) : history.length === 0 ? (
-            <Card>
-              <CardContent className="py-16 text-center space-y-3">
-                <img
-                  src={logo}
-                  alt="NthakaGuide logo"
-                  className="h-14 w-14 rounded-xl shadow-md mx-auto"
-                />
-                <p className="text-muted-foreground text-lg font-medium">No analyses yet.</p>
-                <p className="text-sm text-muted-foreground">
-                  Run your first soil analysis to see results here.
-                </p>
-              </CardContent>
-            </Card>
+        ) : history.length === 0 ? (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-16 gap-3">
+              <Sprout className="h-12 w-12 text-muted-foreground/50" />
+              <p className="text-lg font-semibold text-foreground">No analyses yet.</p>
+              <p className="text-base text-muted-foreground text-center">
+                Run your first soil analysis to see results here.
+              </p>
+            </CardContent>
+          </Card>
 
-          ) : (
-            <div className="space-y-5">
+        ) : (
+          <AnimatePresence initial={false}>
+            <div className="space-y-4">
               {history.map((item, i) => {
                 const mode   = modeBadge(item.input_mode);
                 const isOpen = expanded === item.id;
@@ -364,299 +376,279 @@ export default function History() {
                     key={item.id}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
                     transition={{ delay: i * 0.04 }}
                   >
-                    <Card className="overflow-hidden hover:shadow-md transition-shadow border-border">
-                      <CardContent className="p-0">
+                    <Card className="overflow-hidden">
 
-                        <div className="p-4 sm:p-5">
+                      {/* ── Card header row ──────────────────────────────── */}
+                      <div className="flex flex-col gap-3 p-5">
 
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${mode.cls}`}>
-                                {mode.label}
-                              </span>
-                              <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <MapPin className="h-3 w-3" /> {item.district}
-                                {item.climate_zone && (
-                                  <span className="opacity-60">· {item.climate_zone}</span>
-                                )}
-                              </span>
-                              <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Calendar className="h-3 w-3" />
-                                {new Date(item.created_at).toLocaleDateString("en-GB", {
-                                  day: "numeric", month: "short", year: "numeric",
-                                  hour: "2-digit", minute: "2-digit",
-                                })}
-                              </span>
-                            </div>
+                        {/* Row 1 – meta: mode badge + district + date */}
+                        <div className="flex items-start justify-between gap-3 flex-wrap">
 
-                            <div className="flex items-center gap-1 shrink-0">
-                              <Button
-                                variant="ghost" size="sm"
-                                onClick={() => setExpanded(isOpen ? null : item.id)}
-                                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
-                                title={isOpen ? "Collapse" : "Expand"}
-                              >
-                                {isOpen
-                                  ? <ChevronUp className="h-4 w-4"/>
-                                  : <ChevronDown className="h-4 w-4"/>}
-                              </Button>
-                              <Button
-                                variant="ghost" size="sm"
-                                onClick={() => handleDelete(item.id)}
-                                className="h-8 w-8 p-0 text-destructive hover:text-destructive/80 hover:bg-destructive/5"
-                                title="Delete"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
+                          <div className="flex flex-col gap-1.5 min-w-0">
+                            {/* Mode badge */}
+                            <span className={`self-start text-xs font-semibold px-2.5 py-0.5 rounded-full ${mode.cls}`}>
+                              {mode.label}
+                            </span>
 
-                          <div className="flex items-center gap-3 mt-3">
-                            <img
-                              src={logo}
-                              alt="NthakaGuide logo"
-                              className="h-9 w-9 rounded-lg shadow-sm shrink-0"
-                            />
-                            <div className="flex items-center gap-2 flex-wrap min-w-0">
-                              <span className="text-base font-bold text-foreground truncate">
-                                {item.recommended_crop}
-                              </span>
-                              {item.crop_score !== null && (
-                                <Badge variant="outline" className="text-xs shrink-0">
-                                  {item.crop_score}% match
-                                </Badge>
-                              )}
-                              {item.crop_season && (
-                                <span className="text-xs text-muted-foreground shrink-0">
-                                  {item.crop_season}
+                            {/* District + climate zone */}
+                            {/* text-base → text-lg for prominence */}
+                            <span className="text-base font-semibold text-foreground flex items-center gap-1.5">
+                              <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                              {item.district}
+                              {item.climate_zone && (
+                                <span className="text-sm font-normal text-muted-foreground">
+                                  · {item.climate_zone}
                                 </span>
                               )}
-                            </div>
+                            </span>
+
+                            {/* Date */}
+                            <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+                              <Calendar className="h-3.5 w-3.5 shrink-0" />
+                              {new Date(item.created_at).toLocaleDateString("en-GB", {
+                                day: "numeric", month: "short", year: "numeric",
+                                hour: "2-digit", minute: "2-digit",
+                              })}
+                            </span>
                           </div>
 
-                          
-                          <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-3 text-xs">
-                            {item.fertilizer_type && (
-                              <span className="flex items-center gap-1 text-muted-foreground">
-                                <FlaskConical className="h-3 w-3" /> {item.fertilizer_type}
+                          {/* Action buttons */}
+                          <div className="flex items-center gap-1 shrink-0">
+                            <Button
+                              variant="ghost" size="sm"
+                              onClick={() => setExpanded(isOpen ? null : item.id)}
+                              className="h-9 w-9 p-0 text-muted-foreground hover:text-foreground"
+                              title={isOpen ? "Collapse" : "Expand"}
+                            >
+                              {isOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                            </Button>
+                            <Button
+                              variant="ghost" size="sm"
+                              onClick={() => handleDelete(item.id)}
+                              className="h-9 w-9 p-0 text-destructive hover:text-destructive/80 hover:bg-destructive/5"
+                              title="Delete"
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Row 2 – recommended crop headline */}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Sprout className="h-5 w-5 text-primary shrink-0" />
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {/* Crop name — prominent */}
+                            <span className="text-lg font-bold text-foreground">{item.recommended_crop}</span>
+                            {item.crop_score !== null && (
+                              <span className="text-sm font-semibold text-primary">
+                                {item.crop_score}% match
                               </span>
                             )}
-                            {item.rainfall_mm !== null && (
-                              <span className="flex items-center gap-1 text-muted-foreground">
-                                <CloudRain className="h-3 w-3" /> {item.rainfall_mm}mm
-                                {item.rainfall_band && (
-                                  <Badge
-                                    variant={rainfallBadgeVariant(item.rainfall_category)}
-                                    className="text-[10px] px-1.5 py-0 ml-1"
-                                  >
-                                    {item.rainfall_band}
-                                  </Badge>
-                                )}
-                              </span>
-                            )}
-                            {item.land_use && (
-                              <span className="flex items-center gap-1 text-muted-foreground">
-                                <Sprout className="h-3 w-3" /> {item.land_use}
-                              </span>
-                            )}
-                            {item.previous_crop && (
-                              <span className="flex items-center gap-1 text-muted-foreground">
-                                <RotateCcw className="h-3 w-3" /> prev: {item.previous_crop}
-                              </span>
+                            {item.crop_season && (
+                              <span className="text-sm text-muted-foreground">{item.crop_season}</span>
                             )}
                           </div>
+                        </div>
 
-                          
-                          {item.nitrogen !== null && (
-                            <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-border">
-                              {item.nitrogen      !== null && (
-                                <SoilPill label="N"    value={`${item.nitrogen} mg/kg`}  good={item.nitrogen >= 60} />
+                        {/* Row 3 – quick chips */}
+                        <div className="flex items-center gap-2 flex-wrap text-sm text-foreground">
+                          {item.fertilizer_type && (
+                            <span className="flex items-center gap-1 text-sm font-medium text-foreground">
+                              <FlaskConical className="h-3.5 w-3.5 text-muted-foreground" />
+                              {item.fertilizer_type}
+                            </span>
+                          )}
+                          {item.rainfall_mm !== null && (
+                            <span className="flex items-center gap-1 text-sm font-medium text-foreground">
+                              <CloudRain className="h-3.5 w-3.5 text-muted-foreground" />
+                              {item.rainfall_mm}mm
+                              {item.rainfall_band && (
+                                <Badge variant={rainfallBadgeVariant(item.rainfall_category)} className="text-xs">
+                                  {item.rainfall_band}
+                                </Badge>
                               )}
-                              {item.phosphorus    !== null && (
-                                <SoilPill label="P"    value={`${item.phosphorus} mg/kg`} good={item.phosphorus >= 30} />
-                              )}
-                              {item.potassium     !== null && (
-                                <SoilPill label="K"    value={`${item.potassium} mg/kg`}  good={item.potassium >= 80} />
-                              )}
-                              {item.ph            !== null && (
-                                <SoilPill label="pH"   value={`${item.ph}`}               good={item.ph >= 6.0 && item.ph <= 7.5} />
-                              )}
-                              {item.moisture      !== null && (
-                                <SoilPill label="Mst"  value={`${item.moisture}%`}         good={item.moisture >= 30 && item.moisture <= 70} />
-                              )}
-                              {item.temperature   !== null && (
-                                <SoilPill label="Temp" value={`${item.temperature}°C`}     good />
-                              )}
-                              {item.organic_matter !== null && (
-                                <SoilPill label="OM"   value={`${item.organic_matter}%`}   good={item.organic_matter >= 2.0} />
-                              )}
-                            </div>
+                            </span>
+                          )}
+                          {item.land_use && (
+                            <span className="flex items-center gap-1 text-sm font-medium text-foreground">
+                              <Leaf className="h-3.5 w-3.5 text-muted-foreground" />
+                              {item.land_use}
+                            </span>
+                          )}
+                          {item.previous_crop && (
+                            <span className="flex items-center gap-1 text-sm font-medium text-muted-foreground">
+                              <RotateCcw className="h-3.5 w-3.5" />
+                              prev: {item.previous_crop}
+                            </span>
                           )}
                         </div>
 
-                       
-                        <AnimatePresence>
-                          {isOpen && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.22 }}
-                              className="overflow-hidden"
-                            >
-                              <div className="border-t border-border bg-muted/20 px-4 sm:px-5 py-5 space-y-6">
+                        {/* Row 4 – soil pills (only when data available) */}
+                        {item.nitrogen !== null && (
+                          <div className="flex flex-wrap gap-2">
+                            {item.nitrogen      !== null && <SoilPill label="N"    value={`${item.nitrogen}`}       good={item.nitrogen      >= 60} />}
+                            {item.phosphorus    !== null && <SoilPill label="P"    value={`${item.phosphorus}`}     good={item.phosphorus    >= 30} />}
+                            {item.potassium     !== null && <SoilPill label="K"    value={`${item.potassium}`}      good={item.potassium     >= 80} />}
+                            {item.ph            !== null && <SoilPill label="pH"   value={`${item.ph}`}             good={item.ph >= 6.0 && item.ph <= 7.5} />}
+                            {item.moisture      !== null && <SoilPill label="Mst"  value={`${item.moisture}%`}      good={item.moisture >= 30 && item.moisture <= 70} />}
+                            {item.temperature   !== null && <SoilPill label="Tmp"  value={`${item.temperature}°C`} good={true} />}
+                            {item.organic_matter!== null && <SoilPill label="OM"   value={`${item.organic_matter}%`} good={item.organic_matter >= 2.0} />}
+                          </div>
+                        )}
+                      </div>
 
-                              
-                                {alerts.length > 0 && (
-                                  <section>
-                                    <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
-                                      Soil Health Alerts
-                                    </h3>
-                                    <div className="space-y-1.5">
-                                      {alerts.map((alert, j) => (
-                                        <div
-                                          key={j}
-                                          className={`flex gap-2 items-start p-2 rounded-md text-xs border ${alertStyle(alert.type)}`}
-                                        >
-                                          <AlertIcon type={alert.type} />
-                                          <span>{alert.message}</span>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </section>
-                                )}
+                      {/* ── Expandable detail section ─────────────────────── */}
+                      <AnimatePresence initial={false}>
+                        {isOpen && (
+                          <motion.div
+                            key="detail"
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.25, ease: "easeInOut" }}
+                            className="overflow-hidden"
+                          >
+                            <div className="border-t px-5 pb-5 pt-4 space-y-5">
 
-                             
-                                {crops.length > 0 && (
-                                  <section>
-                                    <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-                                      All {crops.length} Crop Recommendations
-                                    </h3>
-                                    <div className="space-y-3">
-                                      {crops.map((crop, j) => {
-                                        const hasFert = !!(
-                                          (crop.fertilizerPlan?.items ?? []).length > 0 ||
-                                          crop.fertilizerPlan?.basal ||
-                                          crop.fertilizerPlan?.topdress
-                                        );
+                              {/* Soil health alerts */}
+                              {alerts.length > 0 && (
+                                <section className="space-y-2">
+                                  <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+                                    <ShieldAlert className="h-4 w-4 text-destructive" />
+                                    Soil Health Alerts
+                                  </h3>
+                                  <div className="space-y-2">
+                                    {alerts.map((alert, j) => (
+                                      <div
+                                        key={j}
+                                        className={`flex items-start gap-2 rounded-md border px-3 py-2.5 text-sm leading-relaxed ${alertStyle(alert.type)}`}
+                                      >
+                                        <AlertIcon type={alert.type} />
+                                        {/* text-sm with leading-relaxed for scan-friendly alert text */}
+                                        <span className="text-sm leading-relaxed">{alert.message}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </section>
+                              )}
 
-                                        return (
-                                          <div
-                                            key={j}
-                                            className={`rounded-lg border p-3 space-y-3 ${
-                                              j === 0
-                                                ? "border-primary/30 bg-primary/5"
-                                                : "border-border bg-background"
-                                            }`}
-                                          >
-                                            
-                                            <div className="flex items-center gap-3">
+                              {/* All crop recommendations */}
+                              {crops.length > 0 && (
+                                <section className="space-y-3">
+                                  <h3 className="text-base font-semibold text-foreground">
+                                    All {crops.length} Crop Recommendations
+                                  </h3>
+
+                                  <div className="space-y-4">
+                                    {crops.map((crop, j) => {
+                                      const hasFert = !!(
+                                        (crop.fertilizerPlan?.items ?? []).length > 0 ||
+                                        crop.fertilizerPlan?.basal ||
+                                        crop.fertilizerPlan?.topdress
+                                      );
+
+                                      return (
+                                        <div key={j} className="rounded-lg border bg-card p-4 space-y-3">
+
+                                          {/* Crop header */}
+                                          <div className="flex items-start justify-between gap-2">
+                                            <div className="flex items-center gap-2 flex-wrap min-w-0">
                                               <span className="text-2xl">{crop.emoji}</span>
-                                              <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2 flex-wrap mb-1">
-                                                  <span className="font-bold text-foreground">
+                                              <div className="min-w-0">
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                  {/* Crop name — text-base font-bold */}
+                                                  <span className="text-base font-bold text-foreground">
                                                     {crop.crop}
                                                   </span>
                                                   {j === 0 && (
-                                                    <Badge className="text-[10px] px-1.5 py-0 bg-primary/10 text-primary border-0">
+                                                    <Badge className="text-xs bg-primary text-primary-foreground">
                                                       Top Pick
                                                     </Badge>
                                                   )}
-                                                  <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                                                    {crop.season}
-                                                  </Badge>
+                                                  {/* Season */}
+                                                  <span className="text-sm text-muted-foreground">{crop.season}</span>
                                                 </div>
-                                                <Progress value={crop.score} className="h-1.5" />
+                                                {/* Score progress bar */}
+                                                <div className="mt-1.5 flex items-center gap-2">
+                                                  <Progress value={crop.score} className="h-1.5 w-24" />
+                                                  <span className="text-xs font-medium text-muted-foreground">{crop.score}%</span>
+                                                </div>
                                               </div>
-                                              <span className="text-sm font-bold text-primary tabular-nums shrink-0">
-                                                {crop.score}%
-                                              </span>
                                             </div>
-
-                                            {/* Reason */}
-                                            <p className="text-xs text-muted-foreground leading-relaxed">
-                                              {crop.reason}
-                                            </p>
-
-                                            
-                                            {(hasFert || crop.rotationAdvice) && (
-                                              <div className={`grid gap-2 ${
-                                                hasFert && crop.rotationAdvice
-                                                  ? "grid-cols-1 sm:grid-cols-2"
-                                                  : "grid-cols-1"
-                                              }`}>
-                                                {hasFert && (
-                                                  <FertilizerPlanCard plan={crop.fertilizerPlan} />
-                                                )}
-                                                {crop.rotationAdvice && (
-                                                  <RotationCard advice={crop.rotationAdvice} />
-                                                )}
-                                              </div>
-                                            )}
+                                            {/* Score badge */}
+                                            <span className="text-base font-bold text-primary shrink-0">
+                                              {crop.score}%
+                                            </span>
                                           </div>
-                                        );
-                                      })}
-                                    </div>
-                                  </section>
-                                )}
 
-                                
-                                {item.nitrogen !== null && (
-                                  <section>
-                                    <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
-                                      Soil Inputs Used
-                                    </h3>
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                      {([
-                                        { label: "Nitrogen",       value: item.nitrogen,       unit: "mg/kg", good: item.nitrogen      >= 60 },
-                                        { label: "Phosphorus",     value: item.phosphorus,     unit: "mg/kg", good: item.phosphorus    >= 30 },
-                                        { label: "Potassium",      value: item.potassium,      unit: "mg/kg", good: item.potassium     >= 80 },
-                                        { label: "pH",             value: item.ph,             unit: "",      good: item.ph !== null && item.ph >= 6.0 && item.ph <= 7.5 },
-                                        { label: "Moisture",       value: item.moisture,       unit: "%",     good: item.moisture !== null && item.moisture >= 30 && item.moisture <= 70 },
-                                        { label: "Temperature",    value: item.temperature,    unit: "°C",    good: true },
-                                        { label: "Organic Matter", value: item.organic_matter, unit: "%",     good: item.organic_matter !== null && item.organic_matter >= 2.0 },
-                                        { label: "Rainfall",       value: item.rainfall_mm,    unit: "mm/yr", good: true },
-                                      ] as const).filter(f => f.value !== null).map(f => (
-                                        <div
-                                          key={f.label}
-                                          className={`rounded-md p-2.5 border ${
-                                            f.good
-                                              ? "bg-green-50 border-green-200 dark:bg-green-900/10 dark:border-green-800"
-                                              : "bg-yellow-50 border-yellow-200 dark:bg-yellow-900/10 dark:border-yellow-800"
-                                          }`}
-                                        >
-                                          <p className={`text-[9px] font-semibold uppercase tracking-wide ${
-                                            f.good
-                                              ? "text-green-700 dark:text-green-400"
-                                              : "text-yellow-700 dark:text-yellow-400"
-                                          }`}>
-                                            {f.label}
+                                          {/* Reason — text-sm with relaxed leading */}
+                                          <p className="text-sm leading-relaxed text-muted-foreground">
+                                            {crop.reason}
                                           </p>
-                                          <p className="text-sm font-bold text-foreground mt-0.5">
-                                            {f.value}{f.unit}
-                                          </p>
+
+                                          {/* Fertilizer + rotation */}
+                                          {(hasFert || crop.rotationAdvice) && (
+                                            <div className="space-y-2">
+                                              {hasFert && <FertilizerPlanCard plan={crop.fertilizerPlan} />}
+                                              {crop.rotationAdvice && <RotationCard advice={crop.rotationAdvice} />}
+                                            </div>
+                                          )}
                                         </div>
-                                      ))}
-                                    </div>
-                                  </section>
-                                )}
+                                      );
+                                    })}
+                                  </div>
+                                </section>
+                              )}
 
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
+                              {/* Soil inputs table */}
+                              {item.nitrogen !== null && (
+                                <section className="space-y-2">
+                                  <h3 className="text-base font-semibold text-foreground">Soil Inputs Used</h3>
 
-                      </CardContent>
+                                  <div className="rounded-lg border divide-y text-sm">
+                                    {([
+                                      { label: "Nitrogen",       value: item.nitrogen,       unit: "mg/kg", good: item.nitrogen      >= 60 },
+                                      { label: "Phosphorus",     value: item.phosphorus,     unit: "mg/kg", good: (item.phosphorus ?? 0) >= 30 },
+                                      { label: "Potassium",      value: item.potassium,      unit: "mg/kg", good: (item.potassium  ?? 0) >= 80 },
+                                      { label: "pH",             value: item.ph,             unit: "",      good: item.ph !== null && item.ph >= 6.0 && item.ph <= 7.5 },
+                                      { label: "Moisture",       value: item.moisture,       unit: "%",     good: item.moisture !== null && item.moisture >= 30 && item.moisture <= 70 },
+                                      { label: "Temperature",    value: item.temperature,    unit: "°C",    good: true },
+                                      { label: "Organic Matter", value: item.organic_matter, unit: "%",     good: item.organic_matter !== null && item.organic_matter >= 2.0 },
+                                      { label: "Rainfall",       value: item.rainfall_mm,    unit: "mm/yr", good: true },
+                                    ] as const).filter(f => f.value !== null).map((f, idx) => (
+                                      <div key={idx} className="flex items-center justify-between px-3 py-2.5">
+                                        {/* Label */}
+                                        <span className="text-sm font-medium text-foreground">{f.label}</span>
+                                        {/* Value — always high contrast */}
+                                        <span className={`text-sm font-semibold ${
+                                          f.good
+                                            ? "text-green-700 dark:text-green-400"
+                                            : "text-red-600 dark:text-red-400"
+                                        }`}>
+                                          {f.value}{f.unit}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </section>
+                              )}
+
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
                     </Card>
                   </motion.div>
                 );
               })}
             </div>
-          )}
+          </AnimatePresence>
+        )}
 
-        </motion.div>
       </main>
     </div>
   );
