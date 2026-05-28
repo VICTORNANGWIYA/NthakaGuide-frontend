@@ -92,7 +92,7 @@ export function AnalysesTab({
                   <SelectItem value="all">All modes</SelectItem>
                   <SelectItem value="lab">Lab</SelectItem>
                   <SelectItem value="field">Field</SelectItem>
-                  <SelectItem value="mixed">Mixed</SelectItem>
+                 
                 </SelectContent>
               </Select>
               <Input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="h-9 w-36 text-sm" title="From date" />
