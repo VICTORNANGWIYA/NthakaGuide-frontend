@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button }   from "@/components/ui/button";
@@ -100,7 +99,7 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" noValidate autoComplete="off">
+    <form onSubmit={handleSubmit} className="space-y-5" noValidate autoComplete="off">
 
       {/* Role */}
       <AnimatePresence>
@@ -111,27 +110,26 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
             exit={{ opacity: 0, height: 0 }}
             className="space-y-2 overflow-hidden"
           >
-            <Label className="flex items-center gap-2">
-              <ShieldCheck className="h-3.5 w-3.5 text-primary" /> Account Type
+            <Label className="flex items-center gap-2 text-base font-medium">
+              <ShieldCheck className="h-4 w-4 text-primary" /> Account Type
             </Label>
             <Select value={role} onValueChange={v => setRole(v as "user")}>
-              <SelectTrigger className="bg-background border-border">
+              <SelectTrigger className="bg-background border-border text-base h-11">
                 <SelectValue placeholder="Select account type…" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="user">Regular User — Farmer / Agronomist</SelectItem>
-                <SelectItem value="admin">Admin — System Administrator</SelectItem>
+              <SelectContent className="text-base">
+                <SelectItem value="user" className="text-base py-2.5">Regular User — Farmer / Agronomist</SelectItem>
+                <SelectItem value="admin" className="text-base py-2.5">Admin — System Administrator</SelectItem>
               </SelectContent>
             </Select>
-           
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Full name */}
       <div className="space-y-2">
-        <Label htmlFor="signup-name" className="flex items-center gap-2">
-          <User className="h-3.5 w-3.5 text-primary" /> Full Name
+        <Label htmlFor="signup-name" className="flex items-center gap-2 text-base font-medium">
+          <User className="h-4 w-4 text-primary" /> Full Name
         </Label>
         <Input
           id="signup-name"
@@ -142,37 +140,37 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
           placeholder="e.g. Chisomo Banda"
           required
           autoComplete="off"
-          className={touched.fullName && usernameError ? "border-destructive focus-visible:ring-destructive" : ""}
+          className={`text-base h-11 ${touched.fullName && usernameError ? "border-destructive focus-visible:ring-destructive" : ""}`}
         />
-        <p className="text-[10px] text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
           Must start with a letter. May include numbers but not numbers only.
         </p>
         {touched.fullName && <FieldError msg={usernameError} />}
       </div>
 
       {/* Phone */}
-      <div onBlur={() => touch("phone")}>
+      <div className="text-base" onBlur={() => touch("phone")}>
         <PhoneInput value={phone} onChange={setPhone} />
       </div>
 
       {/* District */}
       <div className="space-y-2">
-        <Label className="flex items-center gap-2">
-          <MapPin className="h-3.5 w-3.5 text-primary" /> Your District
-          <span className="text-muted-foreground text-xs font-normal">(optional)</span>
+        <Label className="flex items-center gap-2 text-base font-medium">
+          <MapPin className="h-4 w-4 text-primary" /> Your District
+          <span className="text-muted-foreground text-sm font-normal">(optional)</span>
         </Label>
         <Select value={district} onValueChange={setDistrict}>
-          <SelectTrigger className="bg-background border-border">
+          <SelectTrigger className="bg-background border-border text-base h-11">
             <SelectValue placeholder="Select your district…" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="text-base">
             {REGIONS.map(region => (
               <div key={region}>
                 <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {region} Region
                 </div>
                 {MALAWI_DISTRICTS.filter(d => d.region === region).map(d => (
-                  <SelectItem key={d.name} value={d.name}>{d.name}</SelectItem>
+                  <SelectItem key={d.name} value={d.name} className="text-base py-2.5">{d.name}</SelectItem>
                 ))}
               </div>
             ))}
@@ -182,8 +180,8 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
 
       {/* Email */}
       <div className="space-y-2">
-        <Label htmlFor="signup-email" className="flex items-center gap-2">
-          <Mail className="h-3.5 w-3.5 text-primary" /> Email
+        <Label htmlFor="signup-email" className="flex items-center gap-2 text-base font-medium">
+          <Mail className="h-4 w-4 text-primary" /> Email
         </Label>
         <Input
           id="signup-email"
@@ -194,9 +192,9 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
           placeholder="you@gmail.com"
           required
           autoComplete="off"
-          className={touched.email && emailError ? "border-destructive focus-visible:ring-destructive" : ""}
+          className={`text-base h-11 ${touched.email && emailError ? "border-destructive focus-visible:ring-destructive" : ""}`}
         />
-        <p className="text-[10px] text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
           Use a recognised provider: Gmail, Outlook, Yahoo, institutional (.ac.mw, .gov.mw), etc.
         </p>
         {touched.email && <FieldError msg={emailError} />}
@@ -204,35 +202,35 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
 
       {/* Password */}
       <div className="space-y-2">
-        <Label htmlFor="signup-password" className="flex items-center gap-2">
-          <Lock className="h-3.5 w-3.5 text-primary" /> Password
+        <Label htmlFor="signup-password" className="flex items-center gap-2 text-base font-medium">
+          <Lock className="h-4 w-4 text-primary" /> Password
         </Label>
-        
         <PasswordInput
           id="signup-password"
           value={password}
           onChange={e => setPassword(e.target.value)}
           onBlur={() => touch("password")}
           autoComplete="new-password"
+          className="text-base h-11"
         />
         <PasswordStrength password={password} />
       </div>
 
       <Button
         type="submit"
-        className="w-full bg-golden text-golden-foreground hover:bg-golden/90 font-semibold"
+        className="w-full bg-golden text-golden-foreground hover:bg-golden/90 font-semibold text-base h-11"
         disabled={submitting || !formValid}
       >
         {submitting
           ? "Creating account…"
-          : <><UserPlus className="mr-2 h-4 w-4" /> Create Account</>}
+          : <><UserPlus className="mr-2 h-5 w-5" /> Create Account</>}
       </Button>
 
       <div className="text-center pt-2">
         <button
           type="button"
           onClick={onSwitchToLogin}
-          className="text-sm text-primary hover:underline font-medium"
+          className="text-base text-primary hover:underline font-medium"
         >
           Already have an account? Sign in
         </button>
