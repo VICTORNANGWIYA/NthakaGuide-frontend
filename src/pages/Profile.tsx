@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   UserRound, Mail, Save, Phone, MapPin,
   Lock, Trash2, Eye, EyeOff, AlertTriangle, ShieldCheck, X,
-  ChevronRight, Camera, Loader2, ZoomIn,
+  ChevronRight, Camera, Loader2,
 } from "lucide-react";
 import NavHeader from "@/components/NavHeader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -71,11 +71,19 @@ function PasswordField({
   );
 }
 
+// ── Lightbox ──────────────────────────────────────────────────────────────────
+// Uses a portal-friendly wrapper with overflow-hidden on <body> to avoid
+// the position:fixed iframe-collapse bug while still blocking scroll.
 function ImageLightbox({ src, name, onClose }: { src: string; name: string; onClose: () => void }) {
   useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    return () => {
+      window.removeEventListener("keydown", handler);
+      document.body.style.overflow = prev;
+    };
   }, [onClose]);
 
   return (
@@ -83,6 +91,8 @@ function ImageLightbox({ src, name, onClose }: { src: string; name: string; onCl
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      // Use inset-0 with fixed only for the true fullscreen backdrop;
+      // keep z-index high so it covers the nav.
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md p-6"
       onClick={onClose}
     >
@@ -102,24 +112,21 @@ function ImageLightbox({ src, name, onClose }: { src: string; name: string; onCl
         >
           <X className="h-4 w-4" />
         </button>
-
-        {/* Full-size image */}
         <img
           src={src}
           alt={name}
           className="max-h-[80vh] max-w-[80vw] w-auto h-auto rounded-2xl shadow-2xl object-contain"
         />
-
         {name && (
           <p className="text-white/80 text-sm font-medium tracking-wide">{name}</p>
         )}
-
         <p className="text-white/40 text-xs">Press Esc or click outside to close</p>
       </motion.div>
     </motion.div>
   );
 }
 
+// ── Avatar upload ─────────────────────────────────────────────────────────────
 function AvatarUpload({
   avatarUrl, initials, name, onUpload, onRemove, uploading,
 }: {
@@ -142,47 +149,37 @@ function AvatarUpload({
   return (
     <>
       <div className="relative inline-block">
+        <button
+          type="button"
+          onClick={() => { if (avatarUrl) setLightboxOpen(true); }}
+          className="rounded-full focus:outline-none"
+        >
+          <Avatar className="h-24 w-24 ring-2 ring-border shadow-md cursor-zoom-in">
+            {avatarUrl ? <AvatarImage src={avatarUrl} className="object-cover" /> : null}
+            <AvatarFallback className="bg-primary/10 text-primary font-bold text-xl">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+        </button>
 
-  <button
-    type="button"
-    onClick={() => {
-      if (avatarUrl) setLightboxOpen(true);
-    }}
-    className="rounded-full focus:outline-none"
-  >
-    <Avatar className="h-24 w-24 ring-2 ring-border shadow-md cursor-zoom-in">
-      {avatarUrl ? (
-        <AvatarImage src={avatarUrl} className="object-cover" />
-      ) : null}
-      <AvatarFallback className="bg-primary/10 text-primary font-bold text-xl">
-        {initials}
-      </AvatarFallback>
-    </Avatar>
-  </button>
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          className="absolute bottom-0 right-0 h-8 w-8 rounded-full
+                     bg-primary text-white flex items-center justify-center
+                     shadow-lg hover:bg-primary/80 transition"
+        >
+          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
+        </button>
 
-  <button
-    type="button"
-    onClick={() => fileRef.current?.click()}
-    className="absolute bottom-0 right-0 h-8 w-8 rounded-full
-               bg-primary text-white flex items-center justify-center
-               shadow-lg hover:bg-primary/80 transition"
-  >
-    {uploading ? (
-      <Loader2 className="h-4 w-4 animate-spin" />
-    ) : (
-      <Camera className="h-4 w-4" />
-    )}
-  </button>
-
-  <input
-    ref={fileRef}
-    type="file"
-    accept="image/*"
-    className="hidden"
-    onChange={handleFileChange}
-  />
-
-</div>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
+        />
+      </div>
 
       <AnimatePresence>
         {lightboxOpen && avatarUrl && (
@@ -193,6 +190,11 @@ function AvatarUpload({
   );
 }
 
+// ── Delete modal ──────────────────────────────────────────────────────────────
+// KEY FIX: The outer wrapper is a fixed full-screen overlay that is itself
+// scrollable (overflow-y-auto). The inner panel uses max-h with overflow-y-auto
+// as a second safety net. This ensures buttons are always reachable on any
+// screen height, including small laptop displays.
 function DeleteModal({
   onConfirm, onCancel, loading,
 }: {
@@ -206,121 +208,223 @@ function DeleteModal({
   const [pw,      setPw]      = useState("");
   const [showPw,  setShowPw]  = useState(false);
 
+  // Lock body scroll while modal is open
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
   const selectedLabel = DELETION_REASONS.find(r => r.key === reason)?.label ?? "";
 
   return (
     <motion.div
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      // overflow-y-auto on the backdrop lets the whole overlay scroll on
+      // very short viewports (e.g. 768 px tall laptop at full zoom).
+      // py-8 gives breathing room above/below the panel.
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm"
       onClick={onCancel}
     >
-      <motion.div
-        initial={{ scale: 0.92, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.92, y: 16 }}
-        transition={{ type: "spring", damping: 24, stiffness: 300 }}
-        className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl p-6 space-y-5"
-        onClick={e => e.stopPropagation()}
-      >
-        <button onClick={onCancel}
-          className="absolute top-4 right-4 h-8 w-8 rounded-full bg-muted/80 flex items-center
-                     justify-center text-muted-foreground hover:text-foreground transition-colors">
-          <X className="h-4 w-4" />
-        </button>
-
-        <div className="flex flex-col items-center text-center gap-3 pt-2">
-          <div className="h-14 w-14 rounded-full bg-destructive/10 flex items-center justify-center">
-            <AlertTriangle className="h-7 w-7 text-destructive" />
+      {/* Centering wrapper — flex column, min-height full so panel sits in
+          the middle when there is space, but flows to top when it is taller. */}
+      <div className="flex min-h-full items-center justify-center p-4 py-8">
+        <motion.div
+          initial={{ scale: 0.92, y: 16 }}
+          animate={{ scale: 1, y: 0 }}
+          exit={{ scale: 0.92, y: 16 }}
+          transition={{ type: "spring", damping: 24, stiffness: 300 }}
+          // max-h-[90vh] + overflow-y-auto: second safety net so the panel
+          // itself scrolls if it somehow still overflows (e.g. zoomed browser).
+          className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl
+                     max-h-[90vh] overflow-y-auto"
+          onClick={e => e.stopPropagation()}
+        >
+          {/* Sticky close button — always visible even when panel scrolls */}
+          <div className="sticky top-0 z-10 flex justify-end px-6 pt-4 bg-card rounded-t-2xl">
+            <button
+              onClick={onCancel}
+              className="h-8 w-8 rounded-full bg-muted/80 flex items-center
+                         justify-center text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
-          <div>
-            <h2 className="text-xl font-bold text-foreground">Delete your account?</h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              {step === "survey"
-                ? "Before you go, please tell us why. Your feedback helps us improve NthakaGuide."
-                : "This is permanent. All your soil analyses, history, and data will be erased."}
-            </p>
-          </div>
-        </div>
 
-        <div className="flex items-center justify-center gap-2">
-          {(["survey", "confirm"] as const).map((s, i) => (
-            <div key={s} className={`h-2 rounded-full transition-all duration-300 ${
-              step === s ? "w-6 bg-destructive" : i < (step === "confirm" ? 1 : 0) ? "w-2 bg-destructive/40" : "w-2 bg-muted"
-            }`} />
-          ))}
-        </div>
-
-        {step === "survey" && (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">
-                Why are you deleting your account? <span className="text-destructive ml-1">*</span>
-              </Label>
-              <div className="space-y-2">
-                {DELETION_REASONS.map(r => (
-                  <button key={r.key} type="button" onClick={() => setReason(r.key)}
-                    className={`w-full text-left px-3 py-2.5 rounded-lg border text-sm transition-all
-                      ${reason === r.key
-                        ? "border-destructive/60 bg-destructive/5 text-destructive font-medium"
-                        : "border-border text-foreground hover:border-muted-foreground/40 hover:bg-muted/30"}`}>
-                    <span className={`inline-block w-4 h-4 rounded-full border mr-2.5 align-middle transition-colors ${
-                      reason === r.key ? "bg-destructive border-destructive" : "border-muted-foreground"}`} />
-                    {r.label}
-                  </button>
-                ))}
+          <div className="px-6 pb-6 space-y-5">
+            {/* Header */}
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="h-14 w-14 rounded-full bg-destructive/10 flex items-center justify-center">
+                <AlertTriangle className="h-7 w-7 text-destructive" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-foreground">Delete your account?</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {step === "survey"
+                    ? "Before you go, please tell us why. Your feedback helps us improve NthakaGuide."
+                    : "This is permanent. All your soil analyses, history, and data will be erased."}
+                </p>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-muted-foreground">
-                Additional comments <span className="font-normal">(optional)</span>
-              </Label>
-              <Textarea value={details} onChange={e => setDetails(e.target.value)}
-                placeholder="Tell us more…" className="resize-none text-sm" rows={3} maxLength={1000} />
-              <p className="text-[11px] text-muted-foreground text-right">{details.length}/1000</p>
-            </div>
-            <div className="flex gap-3 pt-1">
-              <Button variant="outline" className="flex-1" onClick={onCancel}>Keep My Account</Button>
-              <Button variant="destructive" className="flex-1 gap-1.5" disabled={!reason} onClick={() => setStep("confirm")}>
-                Continue <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )}
 
-        {step === "confirm" && (
-          <div className="space-y-4">
-            <div className="bg-muted/50 rounded-lg px-3 py-2.5 text-sm">
-              <p className="text-xs text-muted-foreground mb-0.5">Your reason</p>
-              <p className="font-medium text-foreground">{selectedLabel}</p>
-              {details && <p className="text-xs text-muted-foreground mt-1 italic">"{details}"</p>}
+            {/* Step dots */}
+            <div className="flex items-center justify-center gap-2">
+              {(["survey", "confirm"] as const).map((s, i) => (
+                <div
+                  key={s}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    step === s
+                      ? "w-6 bg-destructive"
+                      : i < (step === "confirm" ? 1 : 0)
+                        ? "w-2 bg-destructive/40"
+                        : "w-2 bg-muted"
+                  }`}
+                />
+              ))}
             </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Enter your password to confirm deletion</Label>
-              <div className="relative">
-                <Input type={showPw ? "text" : "password"} value={pw} onChange={e => setPw(e.target.value)}
-                  onKeyDown={e => { if (e.key === "Enter" && pw) onConfirm(pw, reason, details); }}
-                  placeholder="Your current password"
-                  className="pr-10 border-destructive/40 focus-visible:ring-destructive"
-                  autoComplete="off" data-lpignore="true" autoFocus />
-                <button type="button" onClick={() => setShowPw(v => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  tabIndex={-1}>
-                  {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
+
+            {/* ── Survey step ── */}
+            {step === "survey" && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Why are you deleting your account?{" "}
+                    <span className="text-destructive ml-1">*</span>
+                  </Label>
+
+                  {/* Scrollable reason list so it never pushes action buttons
+                      off-screen on short displays */}
+                  <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                    {DELETION_REASONS.map(r => (
+                      <button
+                        key={r.key}
+                        type="button"
+                        onClick={() => setReason(r.key)}
+                        className={`w-full text-left px-3 py-2.5 rounded-lg border text-sm transition-all
+                          ${reason === r.key
+                            ? "border-destructive/60 bg-destructive/5 text-destructive font-medium"
+                            : "border-border text-foreground hover:border-muted-foreground/40 hover:bg-muted/30"
+                          }`}
+                      >
+                        <span
+                          className={`inline-block w-4 h-4 rounded-full border mr-2.5 align-middle transition-colors ${
+                            reason === r.key
+                              ? "bg-destructive border-destructive"
+                              : "border-muted-foreground"
+                          }`}
+                        />
+                        {r.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">
+                    Additional comments{" "}
+                    <span className="font-normal">(optional)</span>
+                  </Label>
+                  <Textarea
+                    value={details}
+                    onChange={e => setDetails(e.target.value)}
+                    placeholder="Tell us more…"
+                    className="resize-none text-sm"
+                    rows={3}
+                    maxLength={1000}
+                  />
+                  <p className="text-[11px] text-muted-foreground text-right">
+                    {details.length}/1000
+                  </p>
+                </div>
+
+                {/* Action buttons — always at the bottom of the panel content */}
+                <div className="flex gap-3 pt-1">
+                  <Button variant="outline" className="flex-1" onClick={onCancel}>
+                    Keep My Account
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    className="flex-1 gap-1.5"
+                    disabled={!reason}
+                    onClick={() => setStep("confirm")}
+                  >
+                    Continue <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-            </div>
-            <div className="flex gap-3 pt-1">
-              <Button variant="outline" className="flex-1" onClick={() => setStep("survey")} disabled={loading}>Back</Button>
-              <Button variant="destructive" className="flex-1" disabled={!pw || loading}
-                onClick={() => onConfirm(pw, reason, details)}>
-                {loading ? "Deleting…" : "Yes, delete my account"}
-              </Button>
-            </div>
+            )}
+
+            {/* ── Confirm step ── */}
+            {step === "confirm" && (
+              <div className="space-y-4">
+                <div className="bg-muted/50 rounded-lg px-3 py-2.5 text-sm">
+                  <p className="text-xs text-muted-foreground mb-0.5">Your reason</p>
+                  <p className="font-medium text-foreground">{selectedLabel}</p>
+                  {details && (
+                    <p className="text-xs text-muted-foreground mt-1 italic">"{details}"</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Enter your password to confirm deletion
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      type={showPw ? "text" : "password"}
+                      value={pw}
+                      onChange={e => setPw(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === "Enter" && pw) onConfirm(pw, reason, details);
+                      }}
+                      placeholder="Your current password"
+                      className="pr-10 border-destructive/40 focus-visible:ring-destructive"
+                      autoComplete="off"
+                      data-lpignore="true"
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPw(v => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground
+                                 hover:text-foreground transition-colors"
+                      tabIndex={-1}
+                    >
+                      {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-1">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setStep("survey")}
+                    disabled={loading}
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    className="flex-1"
+                    disabled={!pw || loading}
+                    onClick={() => onConfirm(pw, reason, details)}
+                  >
+                    {loading ? "Deleting…" : "Yes, delete my account"}
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
-        )}
-      </motion.div>
+        </motion.div>
+      </div>
     </motion.div>
   );
 }
 
+// ── Password strength ─────────────────────────────────────────────────────────
 const PW_RULES = [
   (pw: string) => pw.length >= 8,
   (pw: string) => /[a-z]/.test(pw),
@@ -331,6 +435,7 @@ const PW_RULES = [
 const STRENGTH_LABELS = ["Very weak", "Weak", "Fair", "Good", "Strong"];
 const STRENGTH_COLORS = ["bg-destructive", "bg-destructive", "bg-amber-500", "bg-amber-500", "bg-primary"];
 
+// ── Page ──────────────────────────────────────────────────────────────────────
 export default function Profile() {
   const { user, token, loading, signOut } = useAuth();
   const { toast }  = useToast();
@@ -441,7 +546,11 @@ export default function Profile() {
       const res  = await fetch(`${BASE_URL}/profiles/`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ full_name: fullName.trim() || null, phone: phone.trim() || null, district: district || null }),
+        body: JSON.stringify({
+          full_name: fullName.trim() || null,
+          phone:     phone.trim()    || null,
+          district:  district        || null,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to update profile");
@@ -456,9 +565,18 @@ export default function Profile() {
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) return;
-    if (oldPw === newPw) { toast({ title: "Same password", description: "New password must be different.", variant: "destructive" }); return; }
-    if (newPw.length < 8) { toast({ title: "Too short", description: "At least 8 characters.", variant: "destructive" }); return; }
-    if (newPw !== confirmPw) { toast({ title: "Don't match", description: "Passwords must be identical.", variant: "destructive" }); return; }
+    if (oldPw === newPw) {
+      toast({ title: "Same password", description: "New password must be different.", variant: "destructive" });
+      return;
+    }
+    if (newPw.length < 8) {
+      toast({ title: "Too short", description: "At least 8 characters.", variant: "destructive" });
+      return;
+    }
+    if (newPw !== confirmPw) {
+      toast({ title: "Don't match", description: "Passwords must be identical.", variant: "destructive" });
+      return;
+    }
     setChangingPw(true);
     try {
       const res  = await fetch(`${BASE_URL}/auth/change-password`, {
@@ -525,7 +643,7 @@ export default function Profile() {
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-            {/* ── Left ── */}
+            {/* ── Left column ── */}
             <div className="space-y-4">
               <Card>
                 <CardContent className="flex flex-col items-center gap-4 p-6 text-center">
@@ -538,7 +656,9 @@ export default function Profile() {
                     uploading={uploadingAvatar}
                   />
                   <p className="text-[11px] text-muted-foreground -mt-2">
-                    {avatarUrl ? "Click photo to view full size · hover to change" : "Hover to add a photo · JPG, PNG, WebP · max 2 MB"}
+                    {avatarUrl
+                      ? "Click photo to view full size · hover to change"
+                      : "Hover to add a photo · JPG, PNG, WebP · max 2 MB"}
                   </p>
                   <div>
                     <h2 className="text-xl font-bold">{fullName.trim() || "NthakaGuide User"}</h2>
@@ -567,13 +687,19 @@ export default function Profile() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <Button variant="destructive" size="sm" className="w-full" onClick={() => setShowDeleteModal(true)}>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => setShowDeleteModal(true)}
+                  >
                     <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete My Account
                   </Button>
                 </CardContent>
               </Card>
             </div>
 
+            {/* ── Right column ── */}
             <div className="space-y-6">
               <Card>
                 <CardHeader>
@@ -583,15 +709,30 @@ export default function Profile() {
                 <CardContent>
                   <form onSubmit={handleSave} className="space-y-5">
                     <div className="space-y-2">
-                      <Label className="flex items-center gap-2"><UserRound className="h-4 w-4 text-primary" /> Full Name</Label>
-                      <Input value={fullName} onChange={e => setFullName(e.target.value)} placeholder="Enter your full name" />
+                      <Label className="flex items-center gap-2">
+                        <UserRound className="h-4 w-4 text-primary" /> Full Name
+                      </Label>
+                      <Input
+                        value={fullName}
+                        onChange={e => setFullName(e.target.value)}
+                        placeholder="Enter your full name"
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> Phone Number</Label>
-                      <Input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+265 999 000 000" />
+                      <Label className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-primary" /> Phone Number
+                      </Label>
+                      <Input
+                        type="tel"
+                        value={phone}
+                        onChange={e => setPhone(e.target.value)}
+                        placeholder="+265 999 000 000"
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" /> Your District</Label>
+                      <Label className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-primary" /> Your District
+                      </Label>
                       <Select value={district} onValueChange={setDistrict}>
                         <SelectTrigger className="bg-background border-border">
                           <SelectValue placeholder="Select your district..." />
@@ -618,7 +759,8 @@ export default function Profile() {
                       <Input value={email} disabled />
                     </div>
                     <Button type="submit" disabled={saving}>
-                      <Save className="h-4 w-4 mr-2" />{saving ? "Saving..." : "Save Changes"}
+                      <Save className="h-4 w-4 mr-2" />
+                      {saving ? "Saving..." : "Save Changes"}
                     </Button>
                   </form>
                 </CardContent>
@@ -629,11 +771,19 @@ export default function Profile() {
                   <CardTitle className="flex items-center gap-2">
                     <ShieldCheck className="h-5 w-5 text-primary" /> Change Password
                   </CardTitle>
-                  <CardDescription>Choose a strong password different from your current one.</CardDescription>
+                  <CardDescription>
+                    Choose a strong password different from your current one.
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleChangePassword} className="space-y-4" noValidate autoComplete="off">
-                    <PasswordField id="old-pw" label="Current Password" value={oldPw} onChange={setOldPw} placeholder="Your current password" />
+                    <PasswordField
+                      id="old-pw"
+                      label="Current Password"
+                      value={oldPw}
+                      onChange={setOldPw}
+                      placeholder="Your current password"
+                    />
                     <PasswordField id="new-pw" label="New Password" value={newPw} onChange={setNewPw} />
                     {isSamePassword && (
                       <p className="text-xs text-destructive flex items-center gap-1.5">
@@ -644,14 +794,27 @@ export default function Profile() {
                       <div className="space-y-1.5">
                         <div className="flex gap-1">
                           {PW_RULES.map((_, i) => (
-                            <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                              i < pwPassed ? (STRENGTH_COLORS[pwPassed - 1] ?? "bg-muted") : "bg-muted"}`} />
+                            <div
+                              key={i}
+                              className={`h-1 flex-1 rounded-full transition-all duration-300 ${
+                                i < pwPassed
+                                  ? (STRENGTH_COLORS[pwPassed - 1] ?? "bg-muted")
+                                  : "bg-muted"
+                              }`}
+                            />
                           ))}
                         </div>
-                        <p className="text-[11px] text-muted-foreground">{STRENGTH_LABELS[pwPassed - 1] ?? "Very weak"}</p>
+                        <p className="text-[11px] text-muted-foreground">
+                          {STRENGTH_LABELS[pwPassed - 1] ?? "Very weak"}
+                        </p>
                       </div>
                     )}
-                    <PasswordField id="confirm-pw" label="Confirm New Password" value={confirmPw} onChange={setConfirmPw} />
+                    <PasswordField
+                      id="confirm-pw"
+                      label="Confirm New Password"
+                      value={confirmPw}
+                      onChange={setConfirmPw}
+                    />
                     {confirmPw && (
                       <p className={`text-xs flex items-center gap-1.5 ${newPw === confirmPw ? "text-primary" : "text-destructive"}`}>
                         <Lock className="h-3 w-3" />
@@ -659,7 +822,8 @@ export default function Profile() {
                       </p>
                     )}
                     <Button type="submit" disabled={!canSubmitPw} className="w-full sm:w-auto">
-                      <Lock className="h-4 w-4 mr-2" />{changingPw ? "Updating…" : "Update Password"}
+                      <Lock className="h-4 w-4 mr-2" />
+                      {changingPw ? "Updating…" : "Update Password"}
                     </Button>
                   </form>
                 </CardContent>
@@ -671,7 +835,11 @@ export default function Profile() {
 
       <AnimatePresence>
         {showDeleteModal && (
-          <DeleteModal onConfirm={handleDeleteAccount} onCancel={() => setShowDeleteModal(false)} loading={deletingAccount} />
+          <DeleteModal
+            onConfirm={handleDeleteAccount}
+            onCancel={() => setShowDeleteModal(false)}
+            loading={deletingAccount}
+          />
         )}
       </AnimatePresence>
     </div>
