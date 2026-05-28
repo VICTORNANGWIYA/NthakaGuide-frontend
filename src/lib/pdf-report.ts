@@ -9,95 +9,74 @@ export function generatePDFReport(input: SoilInput, result: Recommendation) {
   const contentWidth = pageWidth - margin * 2;
   let y = 20;
 
-  // ── Header ──────────────────────────────────────────────────────────────────
+  // Header
   doc.setFillColor(34, 87, 50);
-  doc.rect(0, 0, 210, 30, "F");
-  doc.setTextColor(255, 255, 255);
+  doc.rect(0, 0, 210, 28, "F");
+  doc.setTextColor(255);
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
-  doc.text("NthakaGuide Report", margin, 19);
+  doc.text("NthakaGuide Report", margin, 18);
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text(new Date().toDateString(), pageWidth - margin, 19, { align: "right" });
-  y = 42;
+  doc.text(new Date().toDateString(), pageWidth - margin, 18, { align: "right" });
+  y = 38;
 
-  // ── Helpers ──────────────────────────────────────────────────────────────────
-
-  /** Add a new page and reset y */
-  const newPage = () => {
-    doc.addPage();
-    y = 20;
-  };
-
-  /** Ensure there is at least `space` mm before the bottom margin */
-  const checkPage = (space = 20) => {
-    if (y + space > 280) newPage();
-  };
-
-  /** Section heading with green title and horizontal rule */
   const section = (title: string) => {
-    checkPage(18);
-    y += 8;
+    if (y > 260) { doc.addPage(); y = 20; }
+    y += 4;
     doc.setFontSize(14);
     doc.setTextColor(34, 87, 50);
     doc.setFont("helvetica", "bold");
     doc.text(title, margin, y);
-    y += 4;
-    doc.setDrawColor(180);
+    y += 2;
+    doc.setDrawColor(34, 87, 50);
+    doc.setLineWidth(0.6);
     doc.line(margin, y, pageWidth - margin, y);
-    y += 7;
+    y += 4;
   };
 
-  /**
-   * Two-column label / value row.
-   * Value is word-wrapped so it never overflows the right margin.
-   */
-  const text = (label: string, value: string) => {
-    const valueX = margin + 58;
-    const valueWidth = contentWidth - 58;
-
-    // Measure wrapped lines
-    doc.setFontSize(11);
-    const lines = doc.splitTextToSize(value, valueWidth) as string[];
-    const blockHeight = lines.length * 6 + 2;
-
-    checkPage(blockHeight + 4);
-
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(60, 60, 60);
-    doc.text(label, margin, y);
-
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(0, 0, 0);
-    doc.text(lines, valueX, y);
-
-    y += blockHeight;
+  // Render any key/value list as a two-column table — auto-wraps & paginates
+  const kvTable = (rows: [string, string][]) => {
+    autoTable(doc, {
+      startY: y,
+      body: rows,
+      theme: "plain",
+      styles: {
+        fontSize: 11,
+        textColor: [0, 0, 0],
+        cellPadding: 2.5,
+        overflow: "linebreak",
+        valign: "top",
+      },
+      columnStyles: {
+        0: { fontStyle: "bold", cellWidth: 55, textColor: [0, 0, 0] },
+        1: { cellWidth: contentWidth - 55, textColor: [0, 0, 0] },
+      },
+      margin: { left: margin, right: margin },
+    });
+    y = (doc as any).lastAutoTable.finalY + 6;
   };
 
-  /**
-   * Wrapped paragraph block – black text, auto page-break.
-   */
-  const paragraph = (content: string, fontSize = 11) => {
-    doc.setFontSize(fontSize);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(0, 0, 0);
-    const lines = doc.splitTextToSize(content, contentWidth) as string[];
-    const lineH = fontSize * 0.45; // ~mm per line at given size
-
-    // Split across pages if necessary
-    let remaining = [...lines];
-    while (remaining.length > 0) {
-      const available = Math.floor((280 - y) / lineH);
-      const chunk = remaining.splice(0, Math.max(available, 1));
-      doc.text(chunk, margin, y);
-      y += chunk.length * lineH + 2;
-      if (remaining.length > 0) newPage();
-    }
+  // Paragraph that wraps cleanly via autoTable (single full-width cell)
+  const paragraph = (txt: string) => {
+    autoTable(doc, {
+      startY: y,
+      body: [[txt]],
+      theme: "plain",
+      styles: {
+        fontSize: 11,
+        textColor: [0, 0, 0],
+        cellPadding: 2,
+        overflow: "linebreak",
+      },
+      columnStyles: { 0: { cellWidth: contentWidth } },
+      margin: { left: margin, right: margin },
+    });
+    y = (doc as any).lastAutoTable.finalY + 6;
   };
 
-  // ── Soil Bar Chart ───────────────────────────────────────────────────────────
   const drawSoilChart = () => {
-    checkPage(65);
+    if (y + 60 > 280) { doc.addPage(); y = 20; }
     const data = [
       { label: "N", value: input.nitrogen },
       { label: "P", value: input.phosphorus },
@@ -105,133 +84,112 @@ export function generatePDFReport(input: SoilInput, result: Recommendation) {
       { label: "pH", value: input.ph },
       { label: "OM", value: input.organicMatter },
     ];
-    const max = Math.max(...data.map((d) => d.value), 1);
-    const barW = 22;
-    const gap = 10;
-    const chartH = 42;
+    const max = Math.max(...data.map(d => d.value), 1);
+    const barWidth = 22;
+    const gap = 14;
     let x = margin;
-
-    data.forEach((d) => {
-      const barH = (d.value / max) * chartH;
-      // bar
+    data.forEach(d => {
+      const h = (d.value / max) * 40;
       doc.setFillColor(34, 87, 50);
-      doc.rect(x, y + chartH - barH, barW, barH, "F");
-      // value label above bar
-      doc.setFontSize(8);
+      doc.rect(x, y + 40 - h, barWidth, h, "F");
+      doc.setFontSize(10);
       doc.setTextColor(0, 0, 0);
-      doc.text(String(d.value), x + barW / 2, y + chartH - barH - 2, { align: "center" });
-      // axis label
-      doc.setFontSize(9);
-      doc.text(d.label, x + barW / 2, y + chartH + 6, { align: "center" });
-      x += barW + gap;
+      doc.setFont("helvetica", "bold");
+      doc.text(String(d.value), x + barWidth / 2, y + 38 - h, { align: "center" });
+      doc.setFont("helvetica", "normal");
+      doc.text(d.label, x + barWidth / 2, y + 47, { align: "center" });
+      x += barWidth + gap;
     });
-    y += chartH + 14;
+    y += 55;
   };
 
-  // ── Content ──────────────────────────────────────────────────────────────────
-
+  // --- Location & Climate ---
   section("Location & Climate");
-  text("District", `${input.district.name} (${input.district.region})`);
-  text("Rainfall", `${result.forecastedRainfall} mm`);
-  text("Category", result.rainfallCategory);
+  kvTable([
+    ["District", `${input.district.name} (${input.district.region})`],
+    ["Rainfall", `${result.forecastedRainfall} mm`],
+    ["Category", result.rainfallCategory],
+  ]);
 
+  // --- Soil Analysis ---
   section("Soil Analysis");
-  text("Nitrogen", `${input.nitrogen}`);
-  text("Phosphorus", `${input.phosphorus}`);
-  text("Potassium", `${input.potassium}`);
-  text("pH", `${input.ph}`);
-  text("Organic Matter", `${input.organicMatter}`);
+  kvTable([
+    ["Nitrogen (N)", `${input.nitrogen}`],
+    ["Phosphorus (P)", `${input.phosphorus}`],
+    ["Potassium (K)", `${input.potassium}`],
+    ["pH", `${input.ph}`],
+    ["Organic Matter", `${input.organicMatter}`],
+  ]);
   drawSoilChart();
+  paragraph(result.soilAssessment);
 
-  if (result.soilAssessment) {
-    checkPage(12);
-    paragraph(result.soilAssessment, 11);
-    y += 4;
-  }
-
+  // --- Crop Recommendations ---
   section("Crop Recommendations");
-
   result.crops.forEach((crop, i) => {
-    checkPage(50);
+    // Crop heading + score as a single-row table so it never overflows
+    autoTable(doc, {
+      startY: y,
+      body: [[`${i + 1}. ${crop.crop}`, `${crop.score}%`]],
+      theme: "grid",
+      styles: {
+        fontSize: 12,
+        textColor: [0, 0, 0],
+        fontStyle: "bold",
+        cellPadding: 3,
+      },
+      columnStyles: {
+        0: { cellWidth: contentWidth - 30, fillColor: [240, 247, 240] },
+        1: { cellWidth: 30, halign: "right", fillColor: [34, 87, 50], textColor: [255, 255, 255] },
+      },
+      margin: { left: margin, right: margin },
+    });
+    y = (doc as any).lastAutoTable.finalY + 2;
 
-    // Crop heading row
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(0, 0, 0);
-    doc.text(`${i + 1}. ${crop.crop}`, margin, y);
-    doc.setFontSize(11);
-    doc.setTextColor(34, 87, 50);
-    doc.text(`${crop.score}%`, pageWidth - margin, y, { align: "right" });
-    y += 6;
+    paragraph(crop.reason);
 
-    // Reason – wrapped, black
-    if (crop.reason) {
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(0, 0, 0);
-      const reasonLines = doc.splitTextToSize(crop.reason, contentWidth) as string[];
-      const lineH = 5;
-      let rem = [...reasonLines];
-      while (rem.length > 0) {
-        const avail = Math.floor((280 - y) / lineH);
-        const chunk = rem.splice(0, Math.max(avail, 1));
-        doc.text(chunk, margin, y);
-        y += chunk.length * lineH + 2;
-        if (rem.length > 0) newPage();
-      }
-    }
-
-    // Fertilizer table
     if (crop.fertilizerPlan?.items?.length) {
-      checkPage(30);
       autoTable(doc, {
         startY: y,
         head: [["Timing", "Type", "Rate", "Notes"]],
-        body: crop.fertilizerPlan.items.map((item) => [
-          item.timing,
-          item.type,
-          item.applicationRate,
-          item.notes || "",
+        body: crop.fertilizerPlan.items.map(it => [
+          it.timing,
+          it.type,
+          it.applicationRate,
+          it.notes || "",
         ]),
         theme: "grid",
-        // Increase font sizes and use black text throughout
         styles: {
           fontSize: 10,
           textColor: [0, 0, 0],
           cellPadding: 3,
-          overflow: "linebreak",   // ← key: wrap instead of truncate/overflow
+          overflow: "linebreak",
           valign: "top",
         },
         headStyles: {
           fillColor: [34, 87, 50],
           textColor: [255, 255, 255],
-          fontSize: 10,
+          fontSize: 11,
           fontStyle: "bold",
         },
-        // Distribute columns so Notes gets more room
         columnStyles: {
-          0: { cellWidth: 30 },
-          1: { cellWidth: 35 },
-          2: { cellWidth: 30 },
-          3: { cellWidth: "auto" },
+          0: { cellWidth: 32 },
+          1: { cellWidth: 40 },
+          2: { cellWidth: 35 },
+          3: { cellWidth: contentWidth - 107 },
         },
-        tableWidth: contentWidth,
         margin: { left: margin, right: margin },
       });
-      y = (doc as any).lastAutoTable.finalY + 10;
-    } else {
-      y += 4;
+      y = (doc as any).lastAutoTable.finalY + 8;
     }
   });
 
-  // ── Page Numbers ─────────────────────────────────────────────────────────────
+  // Footer page numbers
   const pages = doc.getNumberOfPages();
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i);
     doc.setFontSize(9);
-    doc.setTextColor(120, 120, 120);
-    doc.text(`Page ${i} / ${pages}`, pageWidth - margin, 290, { align: "right" });
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Page ${i}/${pages}`, pageWidth - margin, 290, { align: "right" });
   }
-
   doc.save("NthakaGuide_Premium_Report.pdf");
 }
