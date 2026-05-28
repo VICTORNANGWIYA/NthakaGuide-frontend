@@ -150,14 +150,7 @@ export function UsersTab({
                             })}>
                             <Shield className="h-3.5 w-3.5" />
                           </Button>
-                          <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-primary" title="Reset Password"
-                            onClick={() => onResetPassword(u.id, u.email)}>
-                            <Key className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-destructive" title="Delete User"
-                            onClick={() => onDeleteUser(u.id, u.email)}>
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
+                         
                         </div>
                       </TableCell>
                     </TableRow>
