@@ -23,9 +23,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { MALAWI_DISTRICTS } from "@/lib/malawi-districts";
 
-const API_URL = "http://localhost:5000";
+const API_URL = "https://nthakaguide-backend.onrender.com";
 
-
+/* ── Password Field ── */
 function PasswordField({
   id, label, value, onChange,
 }: {
@@ -47,7 +47,7 @@ function PasswordField({
   );
 }
 
-
+/* ── Image Lightbox ── */
 function ImageLightbox({ src, name, onClose }: { src: string; name: string; onClose: () => void }) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -86,7 +86,7 @@ function ImageLightbox({ src, name, onClose }: { src: string; name: string; onCl
   );
 }
 
-
+/* ── Avatar Upload + Lightbox ── */
 function AvatarUpload({
   avatarUrl, initials, name, onUpload, onRemove, uploading,
 }: {
@@ -150,7 +150,7 @@ function AvatarUpload({
           </div>
         )}
 
-        
+        {/* Remove badge */}
         {avatarUrl && !uploading && (
           <button type="button" onClick={onRemove}
             className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-white
@@ -170,6 +170,7 @@ function AvatarUpload({
   );
 }
 
+/* ── Password strength ── */
 const PW_RULES = [
   (pw: string) => pw.length >= 8,
   (pw: string) => /[a-z]/.test(pw),

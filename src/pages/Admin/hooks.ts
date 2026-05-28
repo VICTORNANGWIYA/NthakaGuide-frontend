@@ -1,8 +1,11 @@
+// src/pages/admin/hooks.ts
+// Shared hooks and API helpers used across all admin tab panels.
 
 import { useState, useEffect, useCallback } from "react";
 
-export const API = "http://localhost:5000";
+export const API = "https://nthakaguide-backend.onrender.com";
 
+// ── Generic fetch hook ────────────────────────────────────────────────────────
 export function useAdminFetch<T>(path: string, token: string | null) {
   const [data,    setData]    = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
